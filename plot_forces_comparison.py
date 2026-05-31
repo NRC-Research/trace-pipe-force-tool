@@ -1,10 +1,13 @@
+import os
+
 print("Starting GRAVEPlot batch comparison plotting script...")
 
 # Paths
-net_forces_path = "/Users/cgg-mac/TRACE-pipe-force-tool/custom_forces.th"
-fric_forces_path = "/Users/cgg-mac/TRACE-pipe-force-tool/custom_forces_friction_only.th"
-output_png = "/Users/cgg-mac/TRACE-pipe-force-tool/forces_transient_comparison.png"
-output_html = "/Users/cgg-mac/TRACE-pipe-force-tool/forces_transient_comparison.html"
+script_dir = os.path.dirname(os.path.abspath(__file__))
+net_forces_path = os.path.join(script_dir, "custom_forces.th")
+fric_forces_path = os.path.join(script_dir, "custom_forces_friction_only.th")
+output_png = os.path.join(script_dir, "forces_transient_comparison.png")
+output_html = os.path.join(script_dir, "forces_transient_comparison.html")
 
 # Helper function to parse .th files
 def parse_th_file(filepath):

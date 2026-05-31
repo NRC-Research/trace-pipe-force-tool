@@ -7,5 +7,8 @@ set -e
 # Make sure the apptainer Lima VM is started
 limactl start apptainer >/dev/null 2>&1
 
+# Resolve script directory to reference container SIF portably
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+
 # Run the TRACE SIF container via Lima shell
-limactl shell apptainer apptainer run /Users/cgg-mac/TRACE-pipe-force-tool/trace-V5.1831.1-linux_aarch64-gfortran.sif "$@"
+limactl shell apptainer apptainer run "${SCRIPT_DIR}/trace-V5.1831.1-linux_aarch64-gfortran.sif" "$@"

@@ -1,5 +1,12 @@
+import os
 import sys
-sys.path.append("/Users/cgg-mac/TRACE-CmakeBuild/Scripts")
+
+# Dynamically append this package's directory to sys.path so that 'import xdrfile'
+# inside the copied xtvReader works seamlessly across all installations.
+package_dir = os.path.dirname(os.path.abspath(__file__))
+if package_dir not in sys.path:
+    sys.path.insert(0, package_dir)
+
 import xtvReader
 
 class XtvExtractor:

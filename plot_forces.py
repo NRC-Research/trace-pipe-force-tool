@@ -1,8 +1,11 @@
+import os
+
 print("Starting GRAVEPlot batch plotting script...")
 
 # Paths
-forces_path = "/Users/cgg-mac/TRACE-pipe-force-tool/custom_forces.th"
-output_path = "/Users/cgg-mac/TRACE-pipe-force-tool/forces_transient.png"
+script_dir = os.path.dirname(os.path.abspath(__file__))
+forces_path = os.path.join(script_dir, "custom_forces.th")
+output_path = os.path.join(script_dir, "forces_transient.png")
 
 # Parse the forces file in Python
 print(f"Parsing force data from {forces_path}...")

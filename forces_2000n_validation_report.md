@@ -70,7 +70,7 @@ The actual post-processor net force evaluates to **$-435.35\text{ N}$**. The sma
 
 ## 5. Visual Comparison
 
-![Comparison Plot](/Users/cgg-mac/.gemini/antigravity-cli/brain/96a46067-7707-4467-b032-3baf10ee290f/forces_transient_comparison.png)
+![Comparison Plot](forces_transient_comparison.png)
 
 The regenerated comparison plot displays:
 1.  **Wall Shear Force (Blue)**: Shows the initialization transient settling rapidly to the flat $+2003.26\text{ N}$ plateau.
