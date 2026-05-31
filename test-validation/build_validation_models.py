@@ -18,7 +18,7 @@ except Exception as e:
     sys.exit(1)
 
 test_validation_dir = Path(__file__).parent.resolve()
-models = ["VAL_002", "VAL_003", "VAL_004"]
+models = ["VAL_001", "VAL_002", "VAL_003", "VAL_004"]
 
 for model_name in models:
     inp_path = test_validation_dir / f"{model_name}.inp"

@@ -1,13 +1,11 @@
 import os
 
-print("Starting GRAVEPlot batch comparison plotting script...")
+print("Starting GRAVEPlot batch comparison plotting script for VAL-001...")
 
-# Paths
-script_dir = os.path.dirname(os.path.abspath(__file__))
-net_forces_path = os.path.join(script_dir, "custom_forces.th")
-fric_forces_path = os.path.join(script_dir, "custom_forces_friction_only.th")
-output_png = os.path.join(script_dir, "forces_transient_comparison.png")
-output_html = os.path.join(script_dir, "forces_transient_comparison.html")
+script_dir = "/Users/cgg-mac/TRACE-pipe-force-tool/test-validation"
+net_forces_path = os.path.join(script_dir, "VAL_001.th")
+fric_forces_path = os.path.join(script_dir, "VAL_001_friction_only.th")
+output_png = os.path.join(script_dir, "VAL_001_comparison.png")
 
 # Helper function to parse .th files
 def parse_th_file(filepath):
@@ -20,10 +18,8 @@ def parse_th_file(filepath):
             parts = line.split()
             if len(parts) >= 2:
                 try:
-                    x = float(parts[0])
-                    y = float(parts[1])
-                    xs.append(x)
-                    ys.append(y)
+                    xs.append(float(parts[0]))
+                    ys.append(float(parts[1]))
                 except ValueError:
                     continue
     return xs, ys
@@ -79,7 +75,7 @@ try:
 except Exception as e:
     print(f"Warning styling series: {e}")
 
-# Render to PNG (static image) and HTML (interactive)
+# Render to PNG (static image)
 print(f"Rendering plot to {output_png}...")
 plot.render(output_png, width=1200, height=800)
 

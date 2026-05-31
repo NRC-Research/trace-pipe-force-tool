@@ -48,6 +48,9 @@ The post-processor results:
 
 **PASSED**. The wall shear force matches the analytical prediction within $0.13\%$.
 
+### 4. Friction Force Plot
+![Case VAL-001 Pipe Friction Plot](VAL_001_comparison.png)
+
 ---
 
 ## VAL-002: Acoustic Wave / Rapid Valve Closure (Water Hammer)
@@ -85,7 +88,7 @@ The post-processor results:
 **PASSED**. The calculated peak force is within $12.5\%$ of the analytical target. The difference is a standard numerical dynamic overshoot (Gibbs phenomenon) expected for step changes on a discrete spatial grid.
 
 ### 4. Dynamic Force Plot
-![Case VAL-002 Acoustic Wave Force Plot](/Users/cgg-mac/.gemini/antigravity-cli/brain/96a46067-7707-4467-b032-3baf10ee290f/VAL_002_acoustic_wave.png)
+![Case VAL-002 Acoustic Wave Force Plot](VAL_002_acoustic_wave.png)
 
 ---
 
@@ -136,7 +139,7 @@ The post-processor results:
 **PASSED**. The post-processor matches the analytical static force balance within $0.04\%$.
 
 ### 4. Force Balance Plot
-![Case VAL-003 Contraction Force Plot](/Users/cgg-mac/.gemini/antigravity-cli/brain/96a46067-7707-4467-b032-3baf10ee290f/VAL_003_contraction.png)
+![Case VAL-003 Contraction Force Plot](VAL_003_contraction.png)
 
 ---
 
@@ -187,4 +190,4 @@ Post-processor results:
 **PASSED**. The directional vector projections and momentum redirection forces match the analytical formulation within $0.003\%$.
 
 ### 4. Directional Force Plot
-![Case VAL-004 Elbow Force Plot](/Users/cgg-mac/.gemini/antigravity-cli/brain/96a46067-7707-4467-b032-3baf10ee290f/VAL_004_bend.png)
+![Case VAL-004 Elbow Force Plot](VAL_004_bend.png)
