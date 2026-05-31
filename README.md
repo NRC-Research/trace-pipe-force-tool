@@ -39,7 +39,27 @@ Calculates dynamic force histories over specified pipe segments.
 
 ---
 
-## 2. Configuration Format (`segments.yaml`)
+## 2. Generating Configuration Skeletons (`trace_force_make_config.py`)
+
+For large plant-sized models with many pipes, writing the YAML configuration file from scratch can be tedious. A helper utility is provided to scan a TRACE XTV file, locate all `pipe` components, and automatically generate a template YAML file populated with their component IDs and cell lists:
+
+### Usage
+```bash
+./trace_force_make_config.py -i <path_to_xtv> [-o <output_yaml>]
+```
+* `-i`, `--input`: Path to the TRACE binary XTV file.
+* `-o`, `--output`: *(Optional)* Path to write the output skeleton YAML (defaults to `template_segments.yaml`).
+
+### Example
+```bash
+./trace_force_make_config.py -i custom_flow.xtv -o segments.yaml
+```
+Once generated, you only need to review and update the `direction_vector`, `cell_length`, and connection junctions to match your plant layout.
+
+---
+
+## 3. Configuration Format (`segments.yaml`)
+
 
 Define your settings and pipe segments using a YAML configuration:
 ```yaml
@@ -63,7 +83,7 @@ segments:
 
 ---
 
-## 3. Elbow Roughness Calculator (`trace_roughness.py`)
+## 4. Elbow Roughness Calculator (`trace_roughness.py`)
 
 A utility to convert localized form losses (like elbow $K$-factors) into equivalent volume roughness values ($\epsilon_e$) for your TRACE input decks. This allows TRACE to natively incorporate form losses into its wall drag terms, which are then used by the force tool.
 
@@ -83,7 +103,7 @@ A utility to convert localized form losses (like elbow $K$-factors) into equival
 
 ---
 
-## 4. Running TRACE Locally via Lima & Apptainer
+## 5. Running TRACE Locally via Lima & Apptainer
 
 To run TRACE calculations locally on an Apple Silicon (ARM64) Mac, you can use the downloaded container image `trace-V5.1831.1-linux_aarch64-gfortran.sif` inside the `apptainer` Lima VM.
 
