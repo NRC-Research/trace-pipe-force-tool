@@ -23,7 +23,11 @@ This report documents the verification and validation results for Case VAL-001 t
 - **Nodalization Diagram**:
   ```mermaid
   graph LR
-      F["FILL 10<br>(Inlet BC)"] -->|Junc 10| C1[Cell 1] --> C2[Cell 2] --> C3[Cell 3] --> C4[Cell 4] -->|Junc 20| B["BREAK 30<br>(Outlet BC)"]
+      F[FILL 10] -->|Junc 10| C1[Cell 1]
+      C1 --> C2[Cell 2]
+      C2 --> C3[Cell 3]
+      C3 --> C4[Cell 4]
+      C4 -->|Junc 20| B[BREAK 30]
   ```
 - **Initial Conditions**: Subcooled liquid water flowing at $22.61\text{ m/s}$ with system pressures elevated ($20\text{-}25\text{ bar}$) to suppress phase change (flashing).
 - **Mock Friction**: $f_w = 0.005$
@@ -54,7 +58,11 @@ The post-processor results:
 - **Nodalization Diagram**:
   ```mermaid
   graph LR
-      F["FILL 10<br>(Inlet BC)"] -->|Junc 10| C1[Cell 1] --> C2[Cell 2] --> C3[...] --> C20[Cell 20] -->|Junc 20| B["BREAK 30<br>(Outlet BC)"]
+      F[FILL 10] -->|Junc 10| C1[Cell 1]
+      C1 --> C2[Cell 2]
+      C2 --> C3[...]
+      C3 --> C20[Cell 20]
+      C20 -->|Junc 20| B[BREAK 30]
   ```
 - **Initial Conditions**: Static subcooled liquid water at $10.0\text{ MPa}$ ($100\text{ bar}$) and $300\text{ K}$.
 - **Transient Trigger**: At $t = 0.01\text{ s}$, the exit pressure jumps instantly to $12.0\text{ MPa}$ ($120\text{ bar}$) representing an incoming acoustic shock wave of $\Delta P = 2.0\text{ MPa}$.
@@ -88,9 +96,11 @@ The post-processor results:
 - **Nodalization Diagram**:
   ```mermaid
   graph LR
-      F["FILL 10<br>(Inlet BC)"] -->|Junc 10| C1["Cell 1<br>(D = 0.5 m)"] --> C2["Cell 2<br>(D = 0.5 m)"]
-      C2 -->|Contraction Step| C3["Cell 3<br>(D = 0.25 m)"] --> C4["Cell 4<br>(D = 0.25 m)"]
-      C4 -->|Junc 20| B["BREAK 30<br>(Outlet BC)"]
+      F[FILL 10] -->|Junc 10| C1["Cell 1 (D=0.5m)"]
+      C1 --> C2["Cell 2 (D=0.5m)"]
+      C2 -->|Contraction| C3["Cell 3 (D=0.25m)"]
+      C3 --> C4["Cell 4 (D=0.25m)"]
+      C4 -->|Junc 20| B[BREAK 30]
   ```
 - **Junction Velocities**: $u_1 = 5.0\text{ m/s}$, $u_2 = 20.0\text{ m/s}$ (satisfying mass conservation).
 - **Mock Friction**: $f_w = 0.005$
@@ -134,9 +144,11 @@ The post-processor results:
 - **Nodalization Diagram**:
   ```mermaid
   graph LR
-      F["FILL 10<br>(Inlet BC)"] -->|Junc 10| C1["Cell 1<br>(Dir: +X)"] --> C2["Cell 2<br>(Dir: +X)"]
-      C2 -->|90° Elbow| C3["Cell 3<br>(Dir: +Y)"] --> C4["Cell 4<br>(Dir: +Y)"]
-      C4 -->|Junc 20| B["BREAK 30<br>(Outlet BC)"]
+      F[FILL 10] -->|Junc 10| C1["Cell 1 (+X)"]
+      C1 --> C2["Cell 2 (+X)"]
+      C2 -->|90 deg Elbow| C3["Cell 3 (+Y)"]
+      C3 --> C4["Cell 4 (+Y)"]
+      C4 -->|Junc 20| B[BREAK 30]
   ```
 - **Fluid Parameters**: $u = 5.0\text{ m/s}$, $D = 0.5\text{ m}$ (area $A = 0.196350\text{ m}^2$)
 - **Mock Friction**: $f_w = 0.005$
