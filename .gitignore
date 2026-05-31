@@ -1,0 +1,26 @@
+# Apptainer / Singularity SIF images
+*.sif
+
+# TRACE output and run files
+*.xtv
+*.tpr
+*.out
+*.msg
+*.echo
+*.html
+fort.*
+*_forces.th
+custom_forces*.th
+forces.th
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Editor and OS junk
+.DS_Store
+.vscode/
+.idea/
+.antigravitycli/

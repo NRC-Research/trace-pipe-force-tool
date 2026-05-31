@@ -1,0 +1,19 @@
+settings:
+  ambient_pressure_pa: 101325.0
+  units: "METRIC"
+  output_format: "TH"
+
+segments:
+  - name: "Custom_Pipe_Segment"
+    direction_vector: [1.0, 0.0, 0.0]  # Flow is along X-axis
+    components:
+      - id: 20
+        type: "pipe"
+        cells: [1, 2, 3, 4]
+        cell_length: 1.0
+    inlet_junction:
+      type: "CONTINUED"
+      id: 10
+    outlet_junction:
+      type: "CONTINUED"
+      id: 20
