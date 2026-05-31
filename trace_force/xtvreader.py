@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
-    xtvReader.py is a native Python module for retrieving values from a
+    xtvreader.py is a native Python module for retrieving values from a
     TRACE XTV file.  It exposes one class that contains several methods
     which make this possible.
 
@@ -36,7 +36,7 @@
 
 __author__ = """Christopher Murray, (Christopher.Murray@nrc.gov)\nJosh Whitman, (Joshua.Whitman@nrc.gov)"""
 
-import xdrfile
+from . import xdrfile
 from collections import namedtuple, OrderedDict
 from itertools import chain
 import traceback
@@ -191,7 +191,7 @@ class XtvFile(object):
 
     Example::
 
-       import xtvReader
+       import xtvreader
 
        # Open the XTV fiie and save the filehandle
        xtv_file = "path/to/file.xtv"
@@ -199,7 +199,7 @@ class XtvFile(object):
 
            # Instantiate an XtvFile object with the open filehandle.  This will read
            # in and parse the XTV header information
-           xtvObj = xtvReader.XtvFile(xtvFileHandle, verbose=True)
+           xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
 
            .....    # do some processing on the object
 
@@ -635,7 +635,7 @@ class XtvFile(object):
 
         Example::
 
-           import xtvReader
+           import xtvreader
 
            # Open the XTV fiie and save the filehandle
            xtv_file = "path/to/file.xtv"
@@ -643,7 +643,7 @@ class XtvFile(object):
 
                # Instantiate an XtvFile object with the open filehandle.  This will read
                # in and parse the XTV header information
-               xtvObj = xtvReader.XtvFile(xtvFileHandle, verbose=True)
+               xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
 
                # Retrieve a single value at a particular axial location
                value = xtvObj.getAxialDataChannel(10.0, 'rftn-140A01R08', 2.45)
@@ -677,7 +677,7 @@ class XtvFile(object):
 
         Example::
 
-           import xtvReader
+           import xtvreader
 
            # Open the XTV fiie and save the filehandle
            xtv_file = "path/to/file.xtv"
@@ -685,7 +685,7 @@ class XtvFile(object):
 
                # Instantiate an XtvFile object with the open filehandle.  This will read
                # in and parse the XTV header information
-               xtvObj = xtvReader.XtvFile(xtvFileHandle, verbose=True)
+               xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
 
                # Retrieve a single value at a particular point in time
                value = xtvObj.getDataChannel(50.0, 'pn-55A06')
@@ -733,7 +733,7 @@ class XtvFile(object):
 
         Example::
 
-           import xtvReader
+           import xtvreader
 
            # Open the XTV fiie and save the filehandle
            xtv_file = "path/to/file.xtv"
@@ -741,7 +741,7 @@ class XtvFile(object):
 
                # Instantiate an XtvFile object with the open filehandle.  This will read
                # in and parse the XTV header information
-               xtvObj = xtvReader.XtvFile(xtvFileHandle, verbose=True)
+               xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
 
                # Retrieve a single value at a particular axial location & point in time
                value = xtvObj.getAxialData(10.0, 140, 'htstrc', 'rftn', 2.45, 8)
@@ -880,7 +880,7 @@ class XtvFile(object):
 
         Example::
 
-           import xtvReader
+           import xtvreader
 
            # Open the XTV fiie and save the filehandle
            xtv_file = "path/to/file.xtv"
@@ -888,7 +888,7 @@ class XtvFile(object):
 
                # Instantiate an XtvFile object with the open filehandle.  This will read
                # in and parse the XTV header information
-               xtvObj = xtvReader.XtvFile(xtvFileHandle, verbose=True)
+               xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
 
                # Retrieve the fine mesh zht array for a htstr at 10.0 secs
                zht = xtvObj.getAxialLocations(10.0, 140, 'htstrc', 'rftn')
@@ -1004,7 +1004,7 @@ class XtvFile(object):
 
         Example::
 
-           import xtvReader
+           import xtvreader
 
            # Open the XTV fiie and save the filehandle
            xtv_file = "path/to/file.xtv"
@@ -1012,7 +1012,7 @@ class XtvFile(object):
 
                # Instantiate an XtvFile object with the open filehandle.  This will read
                # in and parse the XTV header information
-               xtvObj = xtvReader.XtvFile(xtvFileHandle, verbose=True)
+               xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
 
                # Retrieve a single value at a particular point in time
                value = xtvObj.getData(10.0, 200, 'vessel', 'vln', 2, 3, 4)
@@ -1182,7 +1182,7 @@ class XtvFile(object):
 
         Example::
 
-           import xtvReader
+           import xtvreader
 
            # Open the XTV fiie and save the filehandle
            xtv_file = "path/to/file.xtv"
@@ -1190,7 +1190,7 @@ class XtvFile(object):
 
                # Instantiate an XtvFile object with the open filehandle.  This will read
                # in and parse the XTV header information
-               xtvObj = xtvReader.XtvFile(xtvFileHandle, verbose=True)
+               xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
 
                # Retrieve a list of values for a given list of time points
                time_points = [10.0, 20.0, 30.0]
@@ -1224,7 +1224,7 @@ class XtvFile(object):
 
         Example::
 
-           import xtvReader
+           import xtvreader
 
            # Open the XTV fiie and save the filehandle
            xtv_file = "path/to/file.xtv"
@@ -1232,7 +1232,7 @@ class XtvFile(object):
 
                # Instantiate an XtvFile object with the open filehandle.  This will read
                # in and parse the XTV header information
-               xtvObj = xtvReader.XtvFile(xtvFileHandle, verbose=True)
+               xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
 
                # Retrieve a list of (time, value) pairs for a particular data channel
                list = xtvObj.getTimeVector('rftn-140A01R08')
@@ -1268,7 +1268,7 @@ class XtvFile(object):
 
         Example::
 
-           import xtvReader
+           import xtvreader
 
            # Open the XTV fiie and save the filehandle
            xtv_file = "path/to/file.xtv"
@@ -1276,7 +1276,7 @@ class XtvFile(object):
 
                # Instantiate an XtvFile object with the open filehandle.  This will read
                # in and parse the XTV header information
-               xtvObj = xtvReader.XtvFile(xtvFileHandle, verbose=True)
+               xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
 
                # Retrieve a list of (time, value) pairs at a particular axial location
                list = xtvObj.getTimeVectorAxial('rftn-140A01R08', 4.5)
@@ -1333,7 +1333,7 @@ class XtvFile(object):
 
         Example::
 
-           import xtvReader
+           import xtvreader
 
            # Open the XTV fiie and save the filehandle
            xtv_file = "path/to/file.xtv"
@@ -1341,7 +1341,7 @@ class XtvFile(object):
 
                # Instantiate an XtvFile object with the open filehandle.  This will read
                # in and parse the XTV header information
-               xtvObj = xtvReader.XtvFile(xtvFileHandle, verbose=True)
+               xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
 
                # Retrieve a list of (z location, value) pairs at a particular time
                list = xtvObj.getAxialVector(10.0, 'rftn-140A01R08')
@@ -1377,7 +1377,7 @@ class XtvFile(object):
 
         Example::
 
-           import xtvReader
+           import xtvreader
 
            # Open the XTV fiie and save the filehandle
            xtv_file = "path/to/file.xtv"
@@ -1385,7 +1385,7 @@ class XtvFile(object):
 
                # Instantiate an XtvFile object with the open filehandle.  This will read
                # in and parse the XTV header information
-               xtvObj = xtvReader.XtvFile(xtvFileHandle, verbose=True)
+               xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
 
                # Retrieve a list of values for a given list of time points
                time_points = [10.0, 20.0, 30.0]
@@ -1401,6 +1401,251 @@ class XtvFile(object):
            raise e
 
         return values
+
+    def getUnits(self, channel):
+        """
+        Given an XTV data channel, retrieve a string that represents the units of
+        the that data channel.
+
+        Args:
+           channel (str): a string of the XTV data channel of interest, i.e. 'rftn-140A03R05'.
+
+        Returns:
+           a string that denotes the units of the data channel.  A value of 'unknown' is
+           returned if the data channel is not found.
+
+        Raises:
+           XTVError will be raised if there is an error attempting to access the
+           component and data channel metadata available in the XTV file.
+
+        Example::
+
+           import xtvreader
+
+           # Open the XTV fiie and save the filehandle
+           xtv_file = "path/to/file.xtv"
+           with open(xtv_file, 'rb') as xtvFileHandle:
+
+               # Instantiate an XtvFile object with the open filehandle.  This will read
+               # in and parse the XTV header information
+               xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
+
+               # Retrieve a string denoting the units of the given data channel
+               units = xtvObj.getUnits('rftn-140A03R05')
+
+        """
+        units = 'unknown'
+        (varName, compType, id, a, r, t) = self.__decode_channel(channel)
+        try:
+           cObj = self.components[(id,compType)]
+           units = cObj.channels[varName].uLabel
+        except XTVError as e:
+           raise e
+
+        return units
+
+
+    def getDescription(self, channel):
+        """
+        Given an XTV data channel, retrieve a short description of the data channel
+
+        Args:
+           channel (str): a string of the XTV data channel of interest, i.e. 'rftn-140A03R05'.
+
+        Returns:
+           a string that denotes the description of the data channel.  A value of 'unknown' is
+           returned if the data channel is not found.
+
+        Raises:
+           XTVError will be raised if there is an error attempting to access the
+           component and data channel metadata available in the XTV file.
+
+        Example::
+
+           import xtvreader
+
+           # Open the XTV fiie and save the filehandle
+           xtv_file = "path/to/file.xtv"
+           with open(xtv_file, 'rb') as xtvFileHandle:
+
+               # Instantiate an XtvFile object with the open filehandle.  This will read
+               # in and parse the XTV header information
+               xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
+
+               # Retrieve a string denoting the units of the given data channel
+               units = xtvObj.getDescription('rftn-140A03R05')
+
+        """
+        desc = ' '
+        (varName, compType, id, a, r, t) = self.__decode_channel(channel)
+        try:
+           cObj = self.components[(id,compType)]
+           desc = cObj.channels[varName].varLabel
+        except XTVError as e:
+           raise e
+
+        return desc
+
+
+    def getList(self, list_all=False, with_desc=False):
+       """
+       Retrieve a dictionary containing the list of the available data channel
+       names in the XTV file.
+
+       Args:
+          list_all (boolean): a logical flag denoting whether dictionary returned
+          shall contain the full list of data channel names, or a more truncated list
+          that only lists one value that corresponds to the maximum mesh location indices
+          for each XTV variable.
+
+          with_desc (boolean): a logical flag denoting whether the channel descriptions
+          should be included along with the channel names in the returned dictionary.
+
+       Returns:
+          a dictionary of lists that contain the available XTV data channels for
+          each component.  The keys of the dictionary correspond to the component type
+          and component number.  They take the form <comp type>-<comp num>, so for
+          example, "pipe-100", or "vessel-1", or "htstr-43001".  If the with_desc
+          logical argument in True, then the returned entries in each list is 
+          actually a tuple of the data channel ID and the associated description.
+
+       Raises:
+          XTVError will be raised if a data channel is found that has a dimension this
+          function cannot handle.
+
+       Example::
+
+          import xtvreader
+
+          # Open the XTV fiie and save the filehandle
+          xtv_file = "path/to/file.xtv"
+          with open(xtv_file, 'rb') as xtvFileHandle:
+
+              # Instantiate an XtvFile object with the open filehandle.  This will read
+              # in and parse the XTV header information
+              xtvObj = xtvreader.XtvFile(xtvFileHandle, verbose=True)
+
+              # Retrieve a list of values for a given list of time points
+              xtvDict = xtvObj.getList(1)
+
+       """
+
+       def genXtvString(var, n=0, a=0, r=0, t=0):
+         """ Generate an XTV data channel string from its constituent elements
+         """
+         if n == 0:
+            string = str(var)
+         elif a == 0:
+            string = str(var) + "-" + str(n)
+         elif r == 0:
+            string = str(var) + "-" + str(n) + "A" + str(a).zfill(2)
+         elif t == 0:
+            string = str(var) + "-" + str(n) + "A" + str(a).zfill(2) + "R" + str(r).zfill(2)
+         else:
+            string = str(var) + "-" + str(n) + "A" + str(a).zfill(2) + "R" + str(r).zfill(2) + "T" + str(t).zfill(2)
+         return string
+
+       xtvChannels = {}
+       for (id,compType), cObj in self.components.items():
+         num = cObj.number
+         if compType == 'htstrc':
+            compType = 'htstr'
+         comp_id = compType + "-" + str(id)
+         xtvChannels.setdefault(comp_id, [])
+         for chan in cObj.channels.values():
+            dimPosAt = chan.dimPosAt.strip()
+            tmplInd = chan.vTmpl
+            vLength = chan.vLength
+            desc = chan.varLabel
+            if tmplInd > 0:
+                coordSystem = cObj.templates[tmplInd].coordSys
+                dimi = cObj.templates[tmplInd].dimi
+                dimj = cObj.templates[tmplInd].dimj
+                dimk = cObj.templates[tmplInd].dimk
+
+            # Handle three-dimensional data channels    
+            if dimPosAt.startswith('3'):  # strings that start with a "3" indicate this is a 3D variable
+                if dimPosAt.endswith("I"):  # strings that end with "I" correspond to XR face vectors
+                    nmesh_i = int(vLength/(dimj*dimk))
+                    nmesh_j = int(vLength/((dimi+1)*dimk))
+                    nmesh_k = int(vLength/((dimi+1)*dimj))
+                elif dimPosAt.endswith("J"):  # strings that end with "J" correspond to YT face vectors
+                    if coordSystem == 'CYL3D':
+                        nmesh_i = int(vLength/(dimj*dimk))
+                        nmesh_j = int(vLength/(dimi*dimk))
+                        nmesh_k = int(vLength/(dimi*dimj))
+                    else:
+                        nmesh_i = int(vLength/((dimj+1)*dimk))
+                        nmesh_j = int(vLength/(dimi*dimk))
+                        nmesh_k = int(vLength/(dimi*(dimj+1)))
+                elif dimPosAt.endswith("K"):  # strings that end with "K" correspond to Z face vectors
+                    nmesh_i = int(vLength/(dimj*(dimk+1)))
+                    nmesh_j = int(vLength/(dimi*(dimk+1)))
+                    nmesh_k = int(vLength/(dimi*dimj))
+                elif dimPosAt.endswith("c"):  # strings that end with "c" correspond to cell center
+                    nmesh_i = int(vLength/(dimj*dimk))
+                    nmesh_j = int(vLength/(dimi*dimk))
+                    nmesh_k = int(vLength/(dimi*dimj))
+                else:
+                    raise XTVError("!! Programming Error !! - Unexpected dimPosAt string")
+    
+                if list_all:
+                   for a in range(1, nmesh_k+1):
+                      for r in range(1, nmesh_i+1):
+                         for t in range(1, nmesh_j+1):
+                            xtvChannel = genXtvString(chan.name, num, a, r, t)
+                            if with_desc:
+                               xtvChannel = (xtvChannel, desc)
+                            xtvChannels[comp_id].append(xtvChannel)
+                          
+                else:
+                   xtvChannel = genXtvString(chan.name, num, nmesh_k, nmesh_i, nmesh_j)
+                   if with_desc:
+                      xtvChannel = (xtvChannel, desc)
+                   xtvChannels[comp_id].append(xtvChannel)
+
+            # Handle two-dimensional data channels    
+            elif dimPosAt.startswith('2'):
+                nmesh_i = int(vLength/(dimj+1))
+                nmesh_j = int(vLength/(dimi))
+                if list_all:
+                   for a in range(1, nmesh_j+1):
+                      for r in range(1, nmesh_i+1):
+                         xtvChannel = genXtvString(chan.name, num, a, r)
+                         if with_desc:
+                            xtvChannel = (xtvChannel, desc)
+                         xtvChannels[comp_id].append(xtvChannel)
+                else:
+                   xtvChannel = genXtvString(chan.name, num, nmesh_j, nmesh_i)
+                   if with_desc:
+                      xtvChannel = (xtvChannel, desc)
+                   xtvChannels[comp_id].append(xtvChannel)
+
+            # Handle one-dimensional data channels    
+            elif dimPosAt.startswith('1'):
+                if list_all:
+                   for a in range(1, chan.vLength+1):
+                      xtvChannel = genXtvString(chan.name, num, a)
+                      if with_desc:
+                         xtvChannel = (xtvChannel, desc)
+                      xtvChannels[comp_id].append(xtvChannel)
+                          
+                else:
+                   xtvChannel = genXtvString(chan.name, num, chan.vLength)
+                   if with_desc:
+                      xtvChannel = (xtvChannel, desc)
+                   xtvChannels[comp_id].append(xtvChannel)
+
+            # Handle zero-dimensional data channels    
+            elif dimPosAt.startswith('0'):
+                xtvChannel = genXtvString(chan.name, num)
+                if with_desc:
+                   xtvChannel = (xtvChannel, desc)
+                xtvChannels[comp_id].append(xtvChannel)
+            else:
+                raise XTVError("!! Programming Error !! - Encountered a variable with a dimension I can't handle")
+
+       return xtvChannels
 
 
 ###############################################################################
@@ -2617,135 +2862,323 @@ def getArguments():
     object """
 
     usage=textwrap.dedent("""
-    The xtvReader.py script includes a built-in test suite to verify that the
-    various worker functions in the XTVFile class can accurately retrieve the
-    correct values from the XTV file.
+    **DESCRIPTION**
+      The xtvreader.py script is both a Python library that you may include
+      in your own python-based plotting tools, and a stand-alone script that
+      may be used to query and retrieve data channel values from an XTV file.
 
-    Running all the tests is easy.  Just invoke xtvReader.py from the command
-    line, like this::
+      A complete description of the API and internal methods that may be used
+      in your own python scripts that import this library can be found in the
+      HTML-based documentation for the TRACE test suite.
 
-        > ./xtvReader.py
+      If you intend to use this script as a standalone tool for accessing XTV
+      information, the included functionality is documented here.
 
-    Each individual test represents a singular attempt to place a request for
-    XTV data using one of the functions exposed by this module.  In most
-    instances, the result of this data pull request is then compared to a
-    similar request made using the PyPost tool that comes with AptPlot.  If the
-    result is the same (or within a reasonable epsilon for tests that involve
-    interpolations), the test is reported as a success.  If not, the test is
-    reported as  having failed.  It is worth noting that while comparisons to
-    PyPost values don't technically represent conclusive proof that the
-    routines are working correctly (because both tools could be wrong in the
-    same way), the chances of this happening are slim.
+    **RETRIEVING XTV DATA**
 
-    A sequence of tests are also performed to show/prove that the right error
-    messages are generated in the right context.  In these instances, rather
-    than compare retrieved results to pypost, the tests are made to call the
-    functions in this module with intentionally bad data in the hope that it
-    will generate an error message.  Any error message so produced is then
-    compared against the the expected error message for that situation.  If the
-    error messages are the same, then the test is considered a success.
+      To extract a data channel from the XTV file, simply run this script and
+      supply the XTV file name and data channel ID using the -i (--input) and
+      -c (--channel) command line arguments.  For example, to get the void
+      fraction for PIPE 10, you would type the following:
 
-    By default, the test routines limit the amount of output to just report on
-    the test being performed and the ultimate result.  If you wish to see more
-    information about the test, like what exact values have been compared, etc,
-    then you can use the --verbose option.
+         > ./xtvreader.py -i <file.xtv> -c alpn-10A01
 
-    Internally, the individual tests are captured in python dictionaries that
-    define the information needed to place the necessary calls to a particular
-    function of interest.  Adding new tests is as simple as locating the
-    appropriate dictionary in the appropriate "test_xxx()" routine and adding
-    the new entry with an appropriate ID string as the dict key.
+      Replace <file.xtv> with the name of your specific XTV file.
 
-    Each individual test has a unique identifier, but tests within a given
-    sequence share a common prefix.  The prefixes used are as follows:
+      You may also provide a list of data channels if you wish to get data
+      for more than one data channel at a time.
 
-       * ``a_``   = indicates tests meant to exercise the getAxialDataChannel() function
+         > ./xtvreader.py -i <file.xtv> -c pn-10A01,pn-10A02
 
-       * ``av_``  = indicates tests meant to exercise the getAxialVector() function
+      By default, data will be printed to the screen in two columns denoting
+      the time and the values of interest.  Line 1 will regurgitate the name 
+      of the data channel. Lines 2 and 3 provide column labels and units for 
+      each columne, respectively.
 
-       * ``i_``   = indicates tests meant to exercise the getDataChannel() function
+      An option also exists to output the data as a vector of tuples that 
+      denote each (time, value) pair.  See the description of the --output
+      command line option below.
 
-       * ``tv_``  = indicates tests meant to exercise the getTimeVector() function
+      Extracting data appropriate for creating an axial plot is fairly easy
+      using the --axial and --at command line options.  In this mode, you
+      provide a list of one or more data channel ID's, as shown above, and
+      for each of the referenced components, the axial axial index gets
+      ignored and instead, the script retrieves data pairs for all of
+      the axial locations in that component at a particular time point.
 
-       * ``tva_`` = indicates tests meant to exercise the getTimeVectorAxial function
+      So let's say we wish to generate an axial plot of the clad surface
+      temperatures of HTSTR 1001 at the last time point in the model.  We
+      would use the following command:
 
-       * ``err``  = indicates tests meant to exercise the error handling logic (the lack
+         > ./xtvreader.py -i <file.xtv> -c tsurfo-1001A01 --axial
+
+      To specify a list of different time points, we would add the --at
+      command line option, like this:
+
+         > ./xtvreader.py -i <file.xtv> -c tsurfo-1001A01 --axial --at 1.0,2.0,-1.0
+
+      The use of a negative value denotes the very last time point in
+      the XTV file.
+
+
+    **QUERYING THE XTV FILE**
+
+      To query the XTV file to see if a particular data channel is
+      contained in the XTV file, you can type the following:
+
+         > ./xtvreader.py -i file.xtv --query pipe-A01
+
+      The script will print a simple message denoting whether that data
+      channel happens to exist in the file.
+
+      Of course, unless you are extremely familiar with TRACE and the input
+      model you are working with, you may not know, a priori, which specific
+      data channels may or may not exist within an XTV file.  The --show
+      command line option to display the meta data of the XTV file.
+
+      To print out a list of all the data channels in the XTV file:
+
+         > ./xtvreader.py -i file.xtv --show=all
+
+      Of course, depending on the size of your input model, the list the above
+      command displays to the screen may be huge.  To alleviate this problem,
+      a truncated list of data channels may generated using the --show=basic
+      option.  In that case, the script will show the data channels for every
+      component, but only for the highest mesh index in each direction.
+         
+         > ./xtvreader.py -i file.xtv --show=basic
+
+      If you wish to further limit the data channels displayed to a single
+      component, you can use the --show="id" option.  In that instance, you
+      will see all the data channels for a particular component, limited to 
+      just the maximum mesh index as with the "basic" option described above.
+
+         > ./xtvreader.py -i file.xtv --show=id --id=101
+
+      If you wish to see all the data channel ID's for a particular component
+      and specific XTV variable name, use the --show="var" option, as follows:
+
+         > ./xtvreader.py -i file.xtv --show=var --var=alpn --id=101
+
+      To get just a list of all the components and their ID numbers, use the
+      --show="comps" command line option:
+
+         > ./xtvreader.py -i file.xtv --show=comps
+
+      Finally, you can also retrieve the list of time points contained in the
+      XTV file using the --show=times option.
+
+         > ./xtvreader.py -i file.xtv --show=times
+
+        
+    **EXERCISING THE BUILT-IN UNIT TESTS**
+
+      The xtvreader.py script includes a built-in test suite to verify that the
+      various worker functions in the XTVFile class can accurately retrieve the
+      correct values from the XTV file.
+
+      Running all the tests is easy.  Just invoke xtvreader.py from the command
+      line, like this::
+
+          > ./xtvreader.py --unit_test
+               or
+          > ./xtvreader.py -u
+
+      Each individual test represents a singular attempt to place a request for
+      XTV data using one of the functions exposed by this module.  In most
+      instances, the result of this data pull request is then compared to a
+      similar request made using the PyPost tool that comes with AptPlot.  If the
+      result is the same (or within a reasonable epsilon for tests that involve
+      interpolations), the test is reported as a success.  If not, the test is
+      reported as having failed.  It is worth noting that while comparisons to
+      PyPost values don't technically represent conclusive proof that the
+      routines are working correctly (because both tools could be wrong in the
+      same way), the chances of this happening are slim.
+
+      A sequence of tests are also performed to show/prove that the right error
+      messages are generated in the right context.  In these instances, rather
+      than compare retrieved results to pypost, the tests are made to call the
+      functions in this module with intentionally bad data in the hope that it
+      will generate an error message.  Any error message so produced is then
+      compared against the the expected error message for that situation.  If the
+      error messages are the same, then the test is considered a success.
+
+      By default, the test routines limit the amount of output to just report on
+      the test being performed and the ultimate result.  If you wish to see more
+      information about the test, like what exact values have been compared, etc,
+      then you can use the --verbose option.
+
+      Internally, the individual tests are captured in python dictionaries that
+      define the information needed to place the necessary calls to a particular
+      function of interest.  Adding new tests is as simple as locating the
+      appropriate dictionary in the appropriate "test_xxx()" routine and adding
+      the new entry with an appropriate ID string as the dict key.
+
+      Each individual test has a unique identifier, but tests within a given
+      sequence share a common prefix.  The prefixes used are as follows:
+
+         * ``a_``   = indicates tests meant to exercise the getAxialDataChannel() function
+ 
+         * ``av_``  = indicates tests meant to exercise the getAxialVector() function
+
+         * ``i_``   = indicates tests meant to exercise the getDataChannel() function
+
+         * ``tv_``  = indicates tests meant to exercise the getTimeVector() function
+
+         * ``tva_`` = indicates tests meant to exercise the getTimeVectorAxial function
+
+         * ``err``  = indicates tests meant to exercise the error handling logic (the lack
                     of an underscore (_) is intentional)
 
-    We recognize that it would sometimes be advantageous to only run a single
-    test or subset of tests rather than wait for the entire test set to
-    complete.  For this reason, some additional command line options have been
-    added.  For example, if you just want to execute a single test, then you
-    would execute the script as follows::
+      We recognize that it would sometimes be advantageous to only run a single
+      test or subset of tests rather than wait for the entire test set to
+      complete.  For this reason, some additional command line options have been
+      added.  For example, if you just want to execute a single test, then you
+      would execute the script as follows::
 
-        > ./xtvReader.py --test a_htstr01
+          > ./xtvreader.py -u --test a_htstr01
 
-    This command line option also takes a comma-separate list of tests, like
-    this::
+      This command line option also takes a comma-separate list of tests, like
+      this::
 
-        > ./xtvReader.py --test a_htstr01,a_pipe01,i_vessel13
+          > ./xtvreader.py -u --test a_htstr01,a_pipe01,i_vessel13
+ 
+      For tests whose ID strings only differ by a numeric value, it is also
+      possible to define a range of test ID's using the --range option, like
+      this::
 
-    For tests whose ID strings only differ by a numeric value, it is also
-    possible to define a range of test ID's using the --range option, like
-    this::
+          > ./xtvreader.py -u --range a_htstr01-a_htstr10
 
-        > ./xtvReader.py --range a_htstr01-a_htstr10
+      In that case, the script treats the two values as bounding values and
+      generates a list of ID strings to test, filling in the missing integers as
+      it goes.
 
-    In that case, the script treats the two values as bounding values and
-    generates a list of ID strings to test, filling in the missing integers as
-    it goes.
+      Finally, it is also possible to limit the tests executed to only a
+      particular sequence that share the same prefix.  In that case, use the
+      --prefix option, like this::
 
-    Finally, it is also possible to limit the tests executed to only a
-    particular sequence that share the same prefix.  In that case, use the
-    --prefix option, like this::
-
-        > ./xtvReader.py --prefix tv_
+          > ./xtvreader.py -u --prefix tv_
 
 
-    By default, the script will look for PyPost in either of the two
-    standard installation directories on a Windows system, namely
-    ``c:\Program Files\AptPlot\\bin`` or ``%USERPROFILE%\AptPlot\\bin``.  But
-    sometimes, it may be located in a different location.  To ensure that PyPost
-    is properly executed, you can use the --pypost command line option to
-    redefine its actual location on your particular filesystem.
+      By default, the script will look for PyPost in either of the two
+      standard installation directories on a Windows system, namely
+      ``c:\Program Files\AptPlot\\bin`` or ``%USERPROFILE%\AptPlot\\bin``.  But
+      sometimes, it may be located in a different location.  To ensure that PyPost
+      is properly executed, you can use the --pypost command line option to
+      redefine its actual location on your particular filesystem.
 
     """)
     parser = argparse.ArgumentParser(description=usage,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("-t", "--tests", type=lambda s: [str(item) for item in s.split(',')],
-                        default='All',
-                        help='Comma-separated list of test names to execute. Default is All.'
-                       )
-    parser.add_argument("-r", "--range", type=lambda s: [str(item) for item in s.split('-')],
-                        default=None,
-                        help="""Define a range of tests to execute by providing a pair of test
-                              ID's separate by a dash.  The script will attempt to fill in the
-                              missing integers."""
-                       )
-    parser.add_argument("-p", "--prefix", type=str,
-                        default=None,
-                        help='Prefix string of the test series that you wish to run'
-                       )
-    parser.add_argument("--pypost", type=str,
-                        default=None,
-                        help='Path to the PyPost executable'
-                       )
-    parser.add_argument("-v", "--verbose", action="store_true", default=False, dest="verbose",
-                        help=textwrap.dedent("""
-                        Generate more verbose output regarding test results for each test\n
-                        """))
+                                     formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument("-a", "--axial", action="store_true", default=False,
+                        help=textwrap.dedent('''
+                        Extract axial plot data.  When this option is set, the script will
+                        retrieve data pairs that correspond to the axial location and parameter
+                        value of interest for a given component and for one or more time points 
+                        (see the --at option below).  If no specific time point is specified, 
+                        then the last time point is used.\n
+                        '''))
+    parser.add_argument("--at", type=lambda s: [str(item) for item in s.split(',')],
+                        default=None, metavar='TIMES',
+                        help=textwrap.dedent('''
+                        Time(s) at which to extract axial data.  TIMES denotes a list
+                        of time points for which axial data will be retrieved if --axial is
+                        set.  By default, the last time point in the XTV file is used if this
+                        option is not specified and --axial is true.\n
+                        '''))
+    parser.add_argument("-c", "--channel", type=lambda s: [str(item) for item in s.split(',')],
+                        default=None, metavar="XTV_CHANNELS",
+                        help=textwrap.dedent('''
+                        Data channel name(s) you wish to extract.  XTV_CHANNELS denotes one
+                        or more XTV data channel names, separated by commas, which have the form
+                        <var name>-<comp num>A<mesh location>R<mesh location>T<mesh location>.
+                        <mesh location> is typically a two digit integer prepended with a
+                        zero when the value is in the range of 1-9.
+                        For example, to get the void fraction from cell 3 of PIPE 100, you
+                        would specify "alpn-100A03".\n
+                        '''))
+    parser.add_argument("--id", type=str, default=None, metavar='COMP_NUM',
+                        help=textwrap.dedent('''
+                        Component number.  Only needed when --show="var" or --show="id"\n
+                        '''))
     parser.add_argument("-i", "--input", type=str,
                         default=None,
-                        help='XTV file you wish to pull a variable from'
-                       )
-    parser.add_argument("-c", "--channel", type=str,
+                        help=textwrap.dedent('''
+                        XTV file you wish to pull a variable from.\n
+                        '''))
+    parser.add_argument("-o", "--output", type=str, default="cols", choices=['cols', 'vec'],
+                        help=textwrap.dedent('''
+                        This option denotes the form of output that XTV data will be written
+                        to the standard output (stdout).  A value of "cols" indicates the
+                        data will be written in column format.  A value of "vec" indicates
+                        the data will be written out as a vector of comma-delimited (time, 
+                        value) pairs.
+                        '''))
+    parser.add_argument("--prefix", type=str,
                         default=None,
-                        help='Data channel name you wish to extract'
-                       )
-    parser.add_argument("--times", action="store_true", default=False, dest="get_times",
-                        help=textwrap.dedent("""
-                        Extract only the vector of times stored in this XTV file\n
-                        """))
+                        help=textwrap.dedent('''
+                        Prefix string of the test series that you wish to run.  This option
+                        only has an effect when --unit_test is used.\n
+                        '''))
+    parser.add_argument("--pypost", type=str,
+                        default=None,
+                        help=textwrap.dedent('''
+                        Path to the PyPost executable.  This option only has an effect when
+                        --unit_test is used.\n
+                        '''))
+    parser.add_argument("-q", "--query", type=str, default=None, metavar="XTV_CHANNEL",
+                        help=textwrap.dedent('''
+                        Query whether a particular data channel exists in the XTV file.  XTV_CHANNEL
+                        should have the same format as required by the --channel command line argument
+                        described above.\n
+                        '''))
+    parser.add_argument("--range", type=lambda s: [str(item) for item in s.split('-')],
+                        default=None,
+                        help=textwrap.dedent('''
+                        Define a range of tests to execute by providing a pair of test ID's
+                        separated by a dash.  The script will attempt to fill in the missing
+                        integers.  This option only has an effect when --unit_test is used.\n
+                        '''))
+    parser.add_argument("-s", "--show", type=str, default="basic", choices=['all', 'basic', 'comps', 'id', 'var', "times"],
+                        help=textwrap.dedent('''
+                        Show a list of available data channels in the XTV file.  This optioo offers
+                        several values that govern the specific behavior required.
+
+                        "all"   : printout the full list of every data channel name contained in the XTV file
+
+                        "basic" : printout a truncated list of data channel names in which the mesh index shown
+                                  corresponds to the maximum index for that data channel.  So if the value
+                                  "alpn-1A05" is displayed, then it can be assumed that the data channels for cells 1-4 are
+                                  also in the graphics file.
+
+                        "var"   : printout the list of data channels for a specific XTV variable in a specific component.
+                                  This option requires the --id and --var command line options.
+
+                        "id"    : printout the list of data channels for a specific component number.  This option
+                                  requires the --id and --var command line options.
+
+                        "comps" : printout a list of all the component identifiers in the XTV file\n
+
+                        "times" : printout a list of the individual time points in the XTV file\n
+                        '''))
+    parser.add_argument("--tests", type=lambda s: [str(item) for item in s.split(',')],
+                        default='All',
+                        help=textwrap.dedent('''
+                        Comma-separated list of test names to execute. This option only has an
+                        effect when --unit_test is used.  Default is All.\n
+                        '''))
+    parser.add_argument("--unit_test", action="store_true", default=False, dest="unit_test",
+                        help=textwrap.dedent('''
+                        Execute the built-in unit test framework.\n
+                        '''))
+    parser.add_argument("--var", type=str, default=None, metavar='XTV_VAR',
+                        help=textwrap.dedent('''
+                        XTV variable name.  Only needed when --show="var"\n
+                        '''))
+    parser.add_argument("-v", "--verbose", action="store_true", default=False, dest="verbose",
+                        help=textwrap.dedent('''
+                        Generate more verbose output regarding test results for each test.\n
+                        '''))
     return parser
 
 
@@ -2764,81 +3197,179 @@ if __name__ == '__main__':
     parser = getArguments()
     args = parser.parse_args()
 
-    if args.input and args.channel:
+    if args.input:
+       # The user supplied an XTV file from the command line.  The assumption is we want to do
+       # something with it, so open it up, parse it, and instantiate an object we can work with.
        xtvFileHandle = open(args.input, 'rb')
        xtvFile = XtvFile(xtvFileHandle, verbose=False)
-       array = []
-       array = xtvFile.getTimeVector(args.channel)
-       if args.get_times:
-          print( xtvFile.times)
-          for x in xtvFile.times:
-            print( x)
+
+       if args.channel:  # User provided a data channel name via command line.  Extract its data.
+          for chan in args.channel:
+
+             if args.axial:  # Axial data processing
+                if args.at:
+                   times = [float(x) for x in args.at]
+                else:
+                   times = [xtvFile.times[-1]]
+                for time in times:
+                   if time < 0.0:
+                      time = xtvFile.times[-1] 
+                   array = xtvFile.getAxialVector(time, chan)
+                   print ()
+                   print ("Data channel : " + chan)
+                   print ("At time = " + str(time) + " secs")
+                   if args.output == 'vec':
+                      print ("Description  : (axial location, " + xtvFile.getDescription(chan).rstrip()+ ")")
+                      print ("Units        : (m, " + xtvFile.getUnits(chan).rstrip() + ")")
+                      print (array)
+                   else:
+                      print ("axial location".ljust(21) + xtvFile.getDescription(chan).rstrip())
+                      print ("meters              " + xtvFile.getUnits(chan).rstrip())
+                      for x,y in array:
+                         print (str(x).ljust(20,' '), y)
+
+             else:  # Time history data processing
+                array = []
+                array = xtvFile.getTimeVector(chan)
+                print ()
+                print ("Data channel : " + chan)
+                if args.output == 'vec':
+                   print ("Description  : (time, " + xtvFile.getDescription(chan).rstrip()+ ")")
+                   print ("Units        : (seconds, " + xtvFile.getUnits(chan).rstrip() + ")")
+                   print (array)
+                else:
+                   print ("time".ljust(21) + xtvFile.getDescription(chan).rstrip())
+                   print ("seconds             " + xtvFile.getUnits(chan).rstrip())
+                   for x,y in array:
+                      print (str(x).ljust(20,' '), y)
+
+
+
+       elif args.query:  # User simply wishes to query whether a particular data channel exists in the XTV file.
+          xtvChannelDict = xtvFile.getList(list_all=True, with_desc=False)
+
+          found = False
+          for comp in xtvChannelDict.keys():
+             for xtvChan in xtvChannelDict[comp]:
+                if args.query == str(xtvChan):
+                   found = True
+                   break
+             if found:
+                break
+          if found:
+             print (" ** Found the data channel **")
+          else:
+             print (" ** Data channel not found! **")
+      
+       elif args.show:  # User wants a list of available data channels.  Several modes exist.
+                        #   1) print out the entire list of data channels to the screen (--show=all)
+                        #   2) print out an abbreviated list of data channels to the screen  (--show=basic)
+                        #   3) print out a list of all the components in the XTV file (--show=comps)
+                        #   4) print out an abbreviated list of data channels for a particular component (--show=id --id=NUM)
+                        #   5) print out the specific data channels for a particular XTV variable 
+                        #      in a specific component (--show=var --var=VAR --id=NUM)
+          if args.show == 'all':
+             xtvChannelDict = xtvFile.getList(list_all=True, with_desc=True)
+             for comp in xtvChannelDict.keys():
+                print (comp)
+                for xtvChan, desc in xtvChannelDict[comp]:
+                   print ("    " + str(xtvChan).ljust(24," ") + "  :  " + desc)
+          elif args.show == 'basic': 
+             xtvChannelDict = xtvFile.getList(list_all=False, with_desc=True)
+             for comp in xtvChannelDict.keys():
+                print (comp)
+                for xtvChan, desc in xtvChannelDict[comp]:
+                   print ("    " + str(xtvChan).ljust(24," ") + "  :  " + desc)
+          elif args.show == 'var':
+             xtvChannelDict = xtvFile.getList(list_all=True, with_desc=False)
+             for comp_id in xtvChannelDict.keys():
+                if comp_id.endswith("-"+args.id):
+                   chanList = xtvChannelDict[comp_id]
+                   for chan in chanList:
+                      if chan.startswith(args.var):
+                         print (chan)
+          elif args.show == 'id':
+             xtvChannelDict = xtvFile.getList(list_all=False, with_desc=True)
+             for comp_id in xtvChannelDict.keys():
+                if comp_id.endswith("-"+args.id):
+                   for (xtvChan, desc) in xtvChannelDict[comp_id]:
+                      print ("    " + str(xtvChan).ljust(24," ") + "  :  " + desc)
+          elif args.show == 'comps':
+             xtvChannelDict = xtvFile.getList(list_all=False, with_desc=False)
+             for comp in xtvChannelDict.keys():
+                print (comp)
+          elif args.show == 'times':
+             if args.output == "vec":
+                print (xtvFile.times)
+             else:
+                for x in xtvFile.times:
+                   print (x)
+
        else:
-          print( array)
-          for x,y in array:
-            print( x, y)
-       exit()
+          # User provided an XTV file, but we don't know what do with it.  Do nothing.
+          pass
 
-    # User may have used command line args to pare back the tests that get run.  Make sense of that now
-    if args.range:                 # User defined a range of tests to run.  Turn that range into a list
-        start_test = args.range[0]
-        end_test = args.range[1]
-
-        #
-        # test names look like this:  xxxx01, xxxx02, xxxx03......
-        # need to parse these strings and separate the numbers from the text
-        #
-        # Extract the digits and base name from the left bounding string and convert to an integer
-        regex = re.compile(r'(?P<base>\w+)(?P<num>\d\d+)')
-        m = regex.match(start_test)
-        if not m:
-            print("Error - invalid string used in the --range cmd line switch")
-            exit()
-        start_num = int(m.group('num'))
-        start_base = m.group('base')
-
-        # Extract the digits and base name from the right bounding string and convert to an integer
-        m = regex.match(end_test)
-        if not m:
-            print("Error - invalid string used in the --range cmd line switch")
-            exit()
-        end_num = int(m.group('num'))
-        end_base = m.group('base')
-
-        if start_base != end_base:
-            print("Error - the test names in the --range argument do not have the same root name")
-            exit()
-
-        tests_to_run = string_range(start_num, end_num+1, 1, start_base)  # turn the numbers into a range of values and re-construct into test names
-    else:
-        tests_to_run = args.tests
-
-    if args.pypost:      # User has defined the location of PyPost from the command line.  Use it, no questions asked.
-        pypost = args.pypost.strip()
-        if sys.platform == 'cygwin':
-            #pypost = subprocess.check_output(['cygpath', '-u', pypost], encoding='utf-8').rstrip('\n')
-            pypost = subprocess.check_output(['cygpath', '-u', pypost]).decode('utf-8').rstrip('\n')
-    else:
-        # Look for PyPost in the usual places.  If it isn't under Program Files, then look for it
-        # in the user's profile location.  If it isn't there either, just quit
-        pp_default = 'c:/Program Files/AptPlot/bin/pypost.exe'
-        if sys.platform == 'cygwin':    # transform Windows path to unix paths when cygwin is used
-            #pp_default = subprocess.check_output(['cygpath', '-u', pp_default], encoding='utf-8').rstrip('\n')
-            pp_default = subprocess.check_output(['cygpath', '-u', pp_default]).decode('utf-8').rstrip('\n')
-
-        if os.path.isfile(pp_default):   # Is our assumption correct?  Is PyPost in Program Files?
-            pypost = pp_default
-        else:
-            user_profile = os.getenv('USERPROFILE')
-            pp_default = os.path.join(user_profile, 'AptPlot', 'bin', 'pypost.exe')
-            if sys.platform == 'cygwin':              # transform Windows path to unix paths when cygwin is used
-                #pp_default = subprocess.check_output(['cygpath', '-u', pp_default], encoding='utf-8').rstrip('\n')
-                pp_default = subprocess.check_output(['cygpath', '-u', pp_default]).decode('utf-8').rstrip('\n')
-            if os.path.isfile(pp_default):
-                pypost = pp_default
-            else:
-                print("Can't locate PyPost.  Use the --pypost option to define it's location yourself")
-                exit()
-
-
-    tests(tests_to_run)
+    elif args.unit_test:
+       # User may have used command line args to pare back the tests that get run.  Make sense of that now
+       if args.range:                 # User defined a range of tests to run.  Turn that range into a list
+           start_test = args.range[0]
+           end_test = args.range[1]
+   
+           #
+           # test names look like this:  xxxx01, xxxx02, xxxx03......
+           # need to parse these strings and separate the numbers from the text
+           #
+           # Extract the digits and base name from the left bounding string and convert to an integer
+           regex = re.compile(r'(?P<base>\w+)(?P<num>\d\d+)')
+           m = regex.match(start_test)
+           if not m:
+               print("Error - invalid string used in the --range cmd line switch")
+               exit()
+           start_num = int(m.group('num'))
+           start_base = m.group('base')
+   
+           # Extract the digits and base name from the right bounding string and convert to an integer
+           m = regex.match(end_test)
+           if not m:
+               print("Error - invalid string used in the --range cmd line switch")
+               exit()
+           end_num = int(m.group('num'))
+           end_base = m.group('base')
+   
+           if start_base != end_base:
+               print("Error - the test names in the --range argument do not have the same root name")
+               exit()
+   
+           tests_to_run = string_range(start_num, end_num+1, 1, start_base)  # turn the numbers into a range of values and re-construct into test names
+       else:
+           tests_to_run = args.tests
+   
+       if args.pypost:      # User has defined the location of PyPost from the command line.  Use it, no questions asked.
+           pypost = args.pypost.strip()
+           if sys.platform == 'cygwin':
+               #pypost = subprocess.check_output(['cygpath', '-u', pypost], encoding='utf-8').rstrip('\n')
+               pypost = subprocess.check_output(['cygpath', '-u', pypost]).decode('utf-8').rstrip('\n')
+       else:
+           # Look for PyPost in the usual places.  If it isn't under Program Files, then look for it
+           # in the user's profile location.  If it isn't there either, just quit
+           pp_default = 'c:/Program Files/AptPlot/bin/pypost.exe'
+           if sys.platform == 'cygwin':    # transform Windows path to unix paths when cygwin is used
+               #pp_default = subprocess.check_output(['cygpath', '-u', pp_default], encoding='utf-8').rstrip('\n')
+               pp_default = subprocess.check_output(['cygpath', '-u', pp_default]).decode('utf-8').rstrip('\n')
+   
+           if os.path.isfile(pp_default):   # Is our assumption correct?  Is PyPost in Program Files?
+               pypost = pp_default
+           else:
+               user_profile = os.getenv('USERPROFILE')
+               pp_default = os.path.join(user_profile, 'AptPlot', 'bin', 'pypost.exe')
+               if sys.platform == 'cygwin':              # transform Windows path to unix paths when cygwin is used
+                   #pp_default = subprocess.check_output(['cygpath', '-u', pp_default], encoding='utf-8').rstrip('\n')
+                   pp_default = subprocess.check_output(['cygpath', '-u', pp_default]).decode('utf-8').rstrip('\n')
+               if os.path.isfile(pp_default):
+                   pypost = pp_default
+               else:
+                   print("Can't locate PyPost.  Use the --pypost option to define it's location yourself")
+                   exit()
+   
+   
+       tests(tests_to_run)

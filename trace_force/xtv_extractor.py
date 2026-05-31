@@ -1,19 +1,10 @@
-import os
-import sys
-
-# Dynamically append this package's directory to sys.path so that 'import xdrfile'
-# inside the copied xtvReader works seamlessly across all installations.
-package_dir = os.path.dirname(os.path.abspath(__file__))
-if package_dir not in sys.path:
-    sys.path.insert(0, package_dir)
-
-import xtvReader
+from . import xtvreader
 
 class XtvExtractor:
     def __init__(self, filepath):
         self.filepath = filepath
         self._file_handle = open(filepath, "rb")
-        self.xtv = xtvReader.XtvFile(self._file_handle, verbose=False)
+        self.xtv = xtvreader.XtvFile(self._file_handle, verbose=False)
         self.times = self.xtv.times
 
     def close(self):
