@@ -1,0 +1,124 @@
+free format
+*m: SNAP:Symbolic Nuclear Analysis Package, Version 5.0.0, September 3, 2025
+*m: PLUGIN:TRACE Version 4.7.0
+*m: CODE:TRACE V 5.0 Patch 9
+*m: DATE:05/31/26
+*
+*
+*************
+* main data *
+*************
+*
+*       numtcr          ieos         inopt          nmat          id2o
+             0             0             1             0             0
+*
+*
+*****************
+* namelist data *
+*****************
+*
+ &inopts
+  ikfac=1,
+  usesjc=3
+ &end
+*
+***************
+* Model Flags *
+***************
+*
+*        dstep         timet
+             0           0.0
+*       stdyst        transi         ncomp          njun          ipak
+             0             1             3             2             1
+*         epso          epss
+         1.0E-4        1.0E-4
+*       oitmax        sitmax        isolut        ncontr         nccfl
+            10            10             0             0             0
+*         ntsv          ntcb          ntcf          ntrp          ntcp
+             1             0             0             0             0
+*
+*************************
+* component-number data *
+*************************
+*
+*  Component input order (IORDER)
+*-- type ---- num ------------- name ----------------  +    jun1   jun2   jun3
+* FILL     *     10 s *                                +      10
+* PIPE     *     20 s *                                +      10     20
+* BREAK    *     30 e *                                +      20
+*
+*
+**************************************************
+* Starting Signal Variable Section of Model      *
+**************************************************
+*
+*         idsv          isvn          ilcn          icn1          icn2
+             1             0             0             0             0
+**************************************************
+* Finished Signal Variable Section of Model      *
+**************************************************
+*
+*
+*
+*
+*******   type           num        userid                component name
+fill                      10             0                        unnamed
+*         jun1          ifty          ioff
+            10             1             0
+*       twtold          rfmx        concin          felv
+           0.0        1.0E20           0.0           0.0
+*         dxin         volin         alpin          vlin          tlin
+         1.0E-6         1.0E6           0.0           5.0         300.0
+*          pin          pain        flowin          vvin          tvin
+          2.0E6           0.0           0.0           0.0         300.0
+*
+*
+*******   type           num        userid                component name
+pipe                      20             0                        unnamed
+*       ncells         nodes          jun1          jun2          epsw
+             4             0            10            20      1.524E-6
+*       nsides
+             0
+*         ichf         iconc      pipetype          ipow        npipes
+             1             0             0             0             1
+*        radin            th         houtl         houtv         toutl
+           0.0           0.0           0.0           0.0           0.0
+*        toutv          pwin         pwoff         rpwmx         pwscl
+           0.0           0.0           0.0           0.0           0.0
+* dx    *          1.0         1.0         1.0         1.0 e
+* vol   *   0.19634954  0.19634954 0.049087385 0.049087385 e
+* fa    *   0.19634954  0.19634954 0.049087385 0.049087385 0.049087385 e
+* kfac  *          0.0         0.0         0.0         0.0         0.0 e
+* grav  *          0.0         0.0         0.0         0.0         0.0 e
+* hd    *          0.5         0.5        0.25        0.25        0.25 e
+* nff   *            1           1           1           1           1 e
+* alp   *          0.0         0.0         0.0         0.0 e
+* vl    *          5.0         5.0        20.0        20.0        20.0 e
+* vv    *          0.0         0.0         0.0         0.0         0.0 e
+* tl    *        300.0       300.0       300.0       300.0 e
+* tv    *        300.0       300.0       300.0       300.0 e
+* p     *        2.0E6       2.0E6       2.0E6       2.0E6 e
+* pa    *          0.0         0.0         0.0         0.0 e
+*
+*
+*******   type           num        userid                component name
+break                     30             0                        unnamed
+*         jun1          ibty          isat          ioff      adjpress
+            20             0             3             2             0
+*         dxin         volin         alpin           tin           pin
+         1.0E-6         1.0E6           0.0         300.0         2.0E6
+*         pain        concin          rbmx          poff          belv
+            0.0           0.0        1.0E20           0.0           0.0
+*
+end
+*
+*****************
+* Timestep Data *
+*****************
+*        dtmin         dtmax          tend         rtwfp
+        1.0E-6           0.1          10.0          10.0
+*        edint         gfint        dmpint        sedint
+         100.0           0.1         100.0           1.0
+*
+*      endflag
+             0.0

@@ -1,0 +1,17 @@
+settings:
+  ambient_pressure_pa: 101325.0
+  units: "METRIC"
+  output_format: "TH"
+
+segments:
+  - name: "VAL_002_Acoustic_Wave"
+    direction_vector: [1.0, 0.0, 0.0]
+    components:
+      - id: 20
+        type: "pipe"
+        cells: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+        cell_length: 0.5
+    inlet_junction:
+      type: "BOUNDED"
+    outlet_junction:
+      type: "BOUNDED"
