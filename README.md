@@ -101,33 +101,8 @@ A utility to convert localized form losses (like elbow $K$-factors) into equival
 ./trace_roughness.py -k 0.22512 -r 0.00015 -l 1.60 -d 0.6651
 ```
 
----
 
-## 5. Running TRACE Locally via Lima & Apptainer
-
-To run TRACE calculations locally on an Apple Silicon (ARM64) Mac, you can use the downloaded container image `trace-V5.1831.1-linux_aarch64-gfortran.sif` inside the `apptainer` Lima VM.
-
-A helper script [run_trace.sh](run_trace.sh) has been provided in the workspace. It automatically starts the Lima VM (if it is stopped) and runs the TRACE SIF container with any arguments you pass to it.
-
-### Usage
-```bash
-./run_trace.sh [TRACE_arguments...]
-```
-
-### Example
-To verify TRACE runs and prints its version:
-```bash
-./run_trace.sh --version
-```
-
-To run a simulation (reads/writes files in the current folder):
-```bash
-./run_trace.sh -p my_model
-```
-
----
-
-## 6. Verification & Validation (V&V) Case Status
+## 5. Verification & Validation (V&V) Case Status
 
 The post-processing engine has been verified against standard fluid-dynamics cases. Complete documentation of the tests is available in the [validation_test_plan.md](test-validation/validation_test_plan.md) and [validation_results_report.md](test-validation/validation_results_report.md).
 
@@ -143,7 +118,7 @@ The post-processing engine has been verified against standard fluid-dynamics cas
 
 ---
 
-## 7. SNAP GUI Integration (Job Stream Step)
+## 6. SNAP GUI Integration (Job Stream Step)
 
 This post-processing tool is integrated into the **SNAP** (Symbolic Nuclear Analysis Program) GUI via the **SNAP Dynamic Piping Force Plugin**, allowing users to define segments and run post-processing calculations directly inside a SNAP Job Stream.
 
@@ -157,6 +132,7 @@ This post-processing tool is integrated into the **SNAP** (Symbolic Nuclear Anal
 1. Download the compiled plugin package `trace-force-plugin-v1.0.0.zip` from the [Standalone GitHub Release](https://github.com/NRC-Research/SNAP-Distribution/releases/tag/trace-force-v1.0.0).
 2. Extract the archive into the main SNAP directory (e.g., `<SNAP_HOME>/`).
 3. Restart SNAP and the Calculation Server to enable the Piping Force calculation step.
+
 
 
 
