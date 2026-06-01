@@ -14,10 +14,12 @@ During the search, we located several critical reference documents, which have b
    * **Report ID**: EGG-EAST-9232 (EG&G Idaho, 1990)
    * **Details**: Documents the *R5FORCE/MOD3s* code designed to compute fluid-induced force/time histories using hydrodynamic output from RELAP5/MOD3.
 2. **RELAP5/MOD3 Code Manual (Volume 5: User's Guidelines)**:
-   * **ADAMS Accession No.**: [ML110380261](https://adamswebsearch2.nrc.gov/webSearch/main.faces?accession_number=ML110380261) (NUREG/CR-5535, Vol. 5)
+   * **ADAMS Accession No.**: **ML110380261** (NUREG/CR-5535, Vol. 5)
+   * **Search Link**: [ADAMS Public Search](https://adams-search.nrc.gov/home)
    * **Details**: Provides standard guidelines on modeling transients that generate dynamic loads (e.g., Courant limit guidelines, nodalization requirements).
 3. **NuScale Short-Term Transient Analysis (HELB)**:
-   * **ADAMS Accession No.**: [ML17005A132](https://adamswebsearch2.nrc.gov/webSearch/main.faces?accession_number=ML17005A132) (Report TR-1016-51669, Rev. 0)
+   * **ADAMS Accession No.**: **ML17005A132** (Report TR-1016-51669, Rev. 0)
+   * **Search Link**: [ADAMS Public Search](https://adams-search.nrc.gov/home)
    * **Details**: An NRC ADAMS public document detailing how NuScale performed transient calculations (e.g., blowdown, main steam, and feedwater line breaks) using NRELAP5 and structural codes.
 4. **Fauske & Associates Technical Bulletin N-15-04**:
    * **Path**: [Tech_bulletin_N-15-04.pdf](references/Tech_bulletin_N-15-04.pdf)
