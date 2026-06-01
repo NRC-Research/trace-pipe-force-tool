@@ -111,7 +111,7 @@ $$\epsilon_e = 3.7 \cdot D \cdot 10^{-\frac{1}{2\sqrt{f_e}}}$$
 ### 5. Proposed TRACE Tool Implementation Steps
 
 1. **Extract TRACE Hydrodynamics**:
-   * Use the existing python utility [`xtvReader.py`](../TRACE-CmakeBuild/Scripts/xtvReader.py) (found in the `TRACE-CmakeBuild` repo) to parse the TRACE binary XTV output files (`Steady.xtv`, `Transient.xtv`, etc.).
+   * Use the python utility [`xtvReader.py`](https://github.com/NRC-Research/xtvReader.git) (from the official `NRC-Research` repository) to parse the TRACE binary XTV output files (`Steady.xtv`, `Transient.xtv`, etc.).
    * Extract time-series values for:
      * Cell Pressures ($P_k$) -> `P`
      * Cell Void Fractions ($\alpha_k$) -> `VOID`
