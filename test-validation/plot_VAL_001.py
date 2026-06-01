@@ -2,7 +2,7 @@ import os
 
 print("Starting GRAVEPlot batch comparison plotting script for VAL-001...")
 
-script_dir = "/Users/cgg-mac/TRACE-pipe-force-tool/test-validation"
+script_dir = os.path.dirname(os.path.abspath(__file__))
 net_forces_path = os.path.join(script_dir, "VAL_001.th")
 fric_forces_path = os.path.join(script_dir, "VAL_001_friction_only.th")
 output_png = os.path.join(script_dir, "VAL_001_comparison.png")

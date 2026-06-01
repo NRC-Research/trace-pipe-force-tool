@@ -1,17 +1,17 @@
-# GRAVEPlot Local Run & Force Comparison Report (macOS)
+# GRAVEPlot Local Run & Force Comparison Report
 
-This document describes the verified execution of **GRAVEPlot** on macOS using its Python batch interface. It also documents the resolution of a critical cell volume calculation bug in the force post-processor and provides a physical comparison of the transient forces.
+This document describes the verified execution of **GRAVEPlot** using its Python batch interface. It also documents the resolution of a critical cell volume calculation bug in the force post-processor and provides a physical comparison of the transient forces.
 
 ---
 
 ## 1. Local GRAVEPlot Setup & Playwright Support
 
-We verified and finalized the local GRAVEPlot installation on macOS:
-*   **Location**: `/Users/cgg-mac/GRAVEPLOTnew/`
+We verified and finalized the local GRAVEPlot installation:
+*   **Location**: `<GRAVEPLOT_DIR>/`
 *   **Playwright Engine Fix**:
-    - Cleared macOS Gatekeeper quarantine flags: `xattr -r -d com.apple.quarantine /Users/cgg-mac/GRAVEPLOTnew`
-    - Restored executable file permissions on Chromium and Headless Shell: `chmod -R +x /Users/cgg-mac/GRAVEPLOTnew/lib/playwright`
-    - Resolved folder path mismatches by moving browser binaries up out of `ms-playwright/` directly into the `/Users/cgg-mac/GRAVEPLOTnew/lib/playwright/` directory where the Java wrapper searches.
+    - Cleared macOS Gatekeeper quarantine flags: `xattr -r -d com.apple.quarantine <GRAVEPLOT_DIR>`
+    - Restored executable file permissions on Chromium and Headless Shell: `chmod -R +x <GRAVEPLOT_DIR>/lib/playwright`
+    - Resolved folder path mismatches by moving browser binaries up out of `ms-playwright/` directly into the `<GRAVEPLOT_DIR>/lib/playwright/` directory where the Java wrapper searches.
     - Verified browser execution: both launch successfully in headless mode now, allowing direct PNG image rendering.
 
 ---
@@ -26,9 +26,9 @@ During testing of the isolated wall shear (friction-only) force, the calculated 
 4.  In subcooled liquid flow, the void fraction $\alpha = 0.0$. Thus, the cell volume was incorrectly read as `0.0 m³`, leading to a calculated cell length of `0.0 m` and a shear force of `0.0 N`.
 
 ### The Fix
-We modified the force calculation engine in [force_engine.py](file:///Users/cgg-mac/TRACE-pipe-force-tool/trace_force/force_engine.py) to look for a `cell_length` parameter in the YAML configuration:
+We modified the force calculation engine in [force_engine.py](trace_force/force_engine.py) to look for a `cell_length` parameter in the YAML configuration:
 *   If `cell_length` is specified, it overrides the time-varying `vol` extraction and uses the constant cell geometry.
-*   We updated the segment files [segments_custom.yaml](file:///Users/cgg-mac/TRACE-pipe-force-tool/segments_custom.yaml) and [segments_friction_only.yaml](file:///Users/cgg-mac/TRACE-pipe-force-tool/segments_friction_only.yaml) with `cell_length: 1.0` (matching our 4-cell, 4-meter pipe discretisation).
+*   We updated the segment files [segments_custom.yaml](segments_custom.yaml) and [segments_friction_only.yaml](segments_friction_only.yaml) with `cell_length: 1.0` (matching our 4-cell, 4-meter pipe discretisation).
 
 ---
 
@@ -38,10 +38,10 @@ We re-calculated the forces for both cases and plotted them using the GRAVEPlot 
 *   **Segment Configs**:
     - **Net Dynamic Force (Elbows Bounded)**: Bounded inlet and outlet. Bounded pressure thrust cancels out steady-state friction.
     - **Wall Shear Force (Friction Only)**: Continued boundaries to isolate viscous drag on the pipe wall.
-*   **Plotting script**: [plot_forces_comparison.py](file:///Users/cgg-mac/TRACE-pipe-force-tool/plot_forces_comparison.py)
+*   **Plotting script**: [plot_forces_comparison.py](plot_forces_comparison.py)
 *   **GRAVEPlot Run Command**:
     ```bash
-    /Users/cgg-mac/GRAVEPLOTnew/bin/graveplot.sh -batch /Users/cgg-mac/TRACE-pipe-force-tool/plot_forces_comparison.py
+    <GRAVEPLOT_DIR>/bin/graveplot.sh -batch plot_forces_comparison.py
     ```
 
 ### Results Summary
@@ -57,10 +57,11 @@ We re-calculated the forces for both cases and plotted them using the GRAVEPlot 
 ## 4. Generated Plots
 
 GRAVEPlot has successfully exported the comparison plot:
-*   **Plot Image**: [forces_transient_comparison.png](file:///Users/cgg-mac/TRACE-pipe-force-tool/forces_transient_comparison.png) (1200x800 static image)
+*   **Plot Image**: [forces_transient_comparison.png](forces_transient_comparison.png) (1200x800 static image)
 *   **Data Files**:
-    - Net Force history: [custom_forces.th](file:///Users/cgg-mac/TRACE-pipe-force-tool/custom_forces.th)
-    - Friction-only history: [custom_forces_friction_only.th](file:///Users/cgg-mac/TRACE-pipe-force-tool/custom_forces_friction_only.th)
+    - Net Force history: [custom_forces.th](custom_forces.th)
+    - Friction-only history: [custom_forces_friction_only.th](custom_forces_friction_only.th)
 
 > [!TIP]
-> Opening the static image [forces_transient_comparison.png](file:///Users/cgg-mac/TRACE-pipe-force-tool/forces_transient_comparison.png) will show both curves clearly, showing the transient dynamic wave action and the steady-state frictional force plateaus.
+> Opening the static image [forces_transient_comparison.png](forces_transient_comparison.png) will show both curves clearly, showing the transient dynamic wave action and the steady-state frictional force plateaus.
+

@@ -2,10 +2,11 @@ import os
 import sys
 from pathlib import Path
 
-# Add SNAP python path
-SNAP_PYTHON_PATH = "/Users/cgg-mac/run-snap500/python"
-if SNAP_PYTHON_PATH not in sys.path:
+# Add SNAP python path (can be overridden by SNAP_PYTHON_PATH env var)
+SNAP_PYTHON_PATH = os.environ.get("SNAP_PYTHON_PATH", os.path.expanduser("~/run-snap500/python"))
+if os.path.exists(SNAP_PYTHON_PATH) and SNAP_PYTHON_PATH not in sys.path:
     sys.path.insert(0, SNAP_PYTHON_PATH)
+
 
 try:
     import snap.model_editor as model_editor

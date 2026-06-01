@@ -1,7 +1,7 @@
 import os
 
 print("Starting GRAVEPlot batch plotting script for VAL-002...")
-script_dir = "/Users/cgg-mac/TRACE-pipe-force-tool/test-validation"
+script_dir = os.path.dirname(os.path.abspath(__file__))
 val002_path = os.path.join(script_dir, "VAL_002.th")
 val002_png = os.path.join(script_dir, "VAL_002_acoustic_wave.png")
 

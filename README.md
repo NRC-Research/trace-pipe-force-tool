@@ -107,7 +107,7 @@ A utility to convert localized form losses (like elbow $K$-factors) into equival
 
 To run TRACE calculations locally on an Apple Silicon (ARM64) Mac, you can use the downloaded container image `trace-V5.1831.1-linux_aarch64-gfortran.sif` inside the `apptainer` Lima VM.
 
-A helper script `run_trace.sh` has been provided in the workspace. It automatically starts the Lima VM (if it is stopped) and runs the TRACE SIF container with any arguments you pass to it.
+A helper script [run_trace.sh](run_trace.sh) has been provided in the workspace. It automatically starts the Lima VM (if it is stopped) and runs the TRACE SIF container with any arguments you pass to it.
 
 ### Usage
 ```bash
@@ -124,4 +124,39 @@ To run a simulation (reads/writes files in the current folder):
 ```bash
 ./run_trace.sh -p my_model
 ```
+
+---
+
+## 6. Verification & Validation (V&V) Case Status
+
+The post-processing engine has been verified against standard fluid-dynamics cases. Complete documentation of the tests is available in the [validation_test_plan.md](test-validation/validation_test_plan.md) and [validation_results_report.md](test-validation/validation_results_report.md).
+
+### V&V Results Summary Matrix
+
+| Case ID | Case Name | Primary Physics Tested | Target Force | Calculated Force | Status |
+|---|---|---|---|---|---|
+| **VAL-001** | Steady-State Pipe Friction | Viscous wall shear, discretization | $+2000.7\text{ N}$ (Shear) | $+2003.26\text{ N}$ | **PASSED** (+0.13%) |
+| **VAL-002** | Acoustic Wave / Water Hammer | Transient wave shock propagation | $+392,699.08\text{ N}$ (Peak) | $+441,668.44\text{ N}$ | **PASSED** (+12.47% overshoot) |
+| **VAL-003** | Piping Area Discontinuity | Step contraction momentum change | $-275,298.74\text{ N}$ (Static) | $-275,180.78\text{ N}$ | **PASSED** (-0.04%) |
+| **VAL-004** | 90-degree Piping Bend | Directional vector projection | $F_x = -375,851.2\text{ N}$<br>$F_y = +375,338.3\text{ N}$ | $F_x = -375,862.63\text{ N}$<br>$F_y = +375,325.24\text{ N}$ | **PASSED** (0.003%) |
+| **VAL-005** | EPRI Safety/Relief Valve | Two-phase transient dynamic loads | R5FORCE benchmark | TBD | **PLANNED** |
+
+---
+
+## 7. SNAP GUI Integration (Job Stream Step)
+
+This post-processing tool is integrated into the **SNAP** (Symbolic Nuclear Analysis Program) GUI via the **SNAP Dynamic Piping Force Plugin**, allowing users to define segments and run post-processing calculations directly inside a SNAP Job Stream.
+
+### Key Plugin Features:
+* **JEdit-Free Swing YAML Editor**: Features an interactive Swing editor utilizing `RSyntaxTextArea` with syntax highlighting. Analysts can configure segments by clicking **"Edit YAML..."** directly in the step's property sheet, with options to edit in-app or open in a system editor (e.g. VS Code).
+* **Custom Step Icon**: Integrates a clean, transparent, light-themed engineering icon (`force16.png`) in the SNAP Job Stream pallet.
+* **Integrated Output Viewer**: Maps the output `forces.th` (`TH` type ASCII files) under the "Text Files" section in SNAP Job Status for direct viewing using the built-in text viewer.
+* **Portable Dynamic Path Resolution**: Dynamically resolves the SNAP `python/` directory path relative to the plugin JAR's location (falling back to `CAFEAN_HOME`), eliminating local path hardcoding.
+
+### Deployment & Distribution:
+1. Download the compiled plugin package `trace-force-plugin-v1.0.0.zip` from the [Standalone GitHub Release](https://github.com/NRC-Research/SNAP-Distribution/releases/tag/trace-force-v1.0.0).
+2. Extract the archive into the main SNAP directory (e.g., `<SNAP_HOME>/`).
+3. Restart SNAP and the Calculation Server to enable the Piping Force calculation step.
+
+
 
