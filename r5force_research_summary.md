@@ -5,22 +5,22 @@ This document summarizes the research on **R5FORCE** (and its MOD3s variant), th
 ---
 
 ## 1. References Identified
-During the search, we located several critical reference documents in the OneDrive sync folder:
-`[how-relap-does-it](how-relap-does-it/)`
+During the search, we located several critical reference documents, which have been copied directly to the repository:
+`[references](references/)`
 
 ### Key Reference Files
 1. **R5FORCE User Manual**: 
-   * **Path**: [R5FORCEMOD3-EGG-EAST-9232-6341078.pdf](how-relap-does-it/r5force/R5FORCEMOD3-EGG-EAST-9232-6341078.pdf)
+   * **Path**: [R5FORCEMOD3-EGG-EAST-9232-6341078.pdf](references/r5force/R5FORCEMOD3-EGG-EAST-9232-6341078.pdf)
    * **Report ID**: EGG-EAST-9232 (EG&G Idaho, 1990)
    * **Details**: Documents the *R5FORCE/MOD3s* code designed to compute fluid-induced force/time histories using hydrodynamic output from RELAP5/MOD3.
 2. **RELAP5/MOD3 Code Manual (Volume 5: User's Guidelines)**:
-   * **Path**: [NUREGCR-5535-RELAP5MOD3CodeMAN-VOL5-ML110380261.pdf](how-relap-does-it/r5force/NUREGCR-5535-RELAP5MOD3CodeMAN-VOL5-ML110380261.pdf)
+   * **Path**: [NUREGCR-5535-RELAP5MOD3CodeMAN-VOL5-ML110380261.pdf](references/r5force/NUREGCR-5535-RELAP5MOD3CodeMAN-VOL5-ML110380261.pdf)
    * **Details**: Provides standard guidelines on modeling transients that generate dynamic loads (e.g., Courant limit guidelines, nodalization requirements).
 3. **NuScale Short-Term Transient Analysis (HELB)**:
-   * **Path**: [NUSCALE-HELB-R5force-ref-ML17005A132.pdf](how-relap-does-it/r5force/NUSCALE-HELB-R5force-ref-ML17005A132.pdf)
+   * **Path**: [NUSCALE-HELB-R5force-ref-ML17005A132.pdf](references/r5force/NUSCALE-HELB-R5force-ref-ML17005A132.pdf)
    * **Details**: An NRC ADAMS public document (Accession No. ML17005A132) detailing how NuScale performed transient calculations (e.g., blowdown, main steam, and feedwater line breaks) using NRELAP5 and structural codes.
 4. **Fauske & Associates Technical Bulletin N-15-04**:
-   * **Path**: [Tech_bulletin_N-15-04.pdf](how-relap-does-it/Tech_bulletin_N-15-04.pdf)
+   * **Path**: [Tech_bulletin_N-15-04.pdf](references/Tech_bulletin_N-15-04.pdf)
    * **Details**: Summarizes dynamic loads in piping systems (specifically relief valve and rupture disk discharges) and outlines the coupling between thermal-hydraulic analysis (RELAP5) and structural stress analysis (PIPESTRESS).
 
 ---
