@@ -6,7 +6,7 @@ This document describes the validation of the **`trace_force`** post-processing 
 
 ## 1. Test Deck Configuration
 
-Using the remote **`snap-trace`** Python API library via in-process FastMCP tool calls on `the development hostcgg0001`, a clean 1D hydraulic model was generated with the following parameters:
+Using the **`snap-trace`** Python API library via in-process FastMCP tool calls, a clean 1D hydraulic model was generated with the following parameters:
 
 ```mermaid
 graph LR
