@@ -79,6 +79,10 @@ err_codes = {
              'AXIAL_UBOUND_ERR'    : "!! XTV Error !! - Invalid axial height - value extends beyond last mesh point",
              'AXIAL_LBOUND_ERR'    : "!! XTV Error !! - Invalid axial height - value comes before first mesh point",
              'AXIAL_SCALAR_ERR'    : "!! XTV Error !! - Axial distance requested for a scalar data channel",
+             'HDR_UNPACK_ERR'      : "!! XTV Error !! - Failed to unpack the XTV Starting Block",
+             'HDR_FORMAT_ERR'      : "!! XTV Error !! - Unsupported XTV format - only MUX format files can be parsed",
+             'RECORD_LEN_ERR'      : "!! XTV Error !! - Header record length does not match Starting Block data length - channel offsets would be wrong",
+             'TIME_ORDER_ERR'      : "!! XTV Error !! - Time points in the XTV file are not in increasing order",
             }
 
 
@@ -228,13 +232,14 @@ class XtvFile(object):
             self.SB = self.__StartingBlock(self.up.unpack_string(), *tuple(chain.from_iterable((tuple(
                 self.up.unpack_int() for i in range(17)), tuple(self.up.unpack_string() for i in
                                                                            range(7))))))
-        except:
+        except Exception:
             print("Something went wrong unpacking the Starting Block")
             print( traceback.format_exc())
+            raise XTVError(err_codes['HDR_UNPACK_ERR'], self.xtvFile.name)
 
         if self.SB.fmtString != "MUX":
             print("Can only parse XTV files. This file is in the format " + self.SB.fmtString)
-            return
+            raise XTVError(err_codes['HDR_FORMAT_ERR'], self.xtvFile.name)
 
         if self.verbose:
             print(self.SB)
@@ -425,24 +430,38 @@ class XtvFile(object):
                     break
 
                 self.up.set_position(start+jump)
-        except:
-            self.opened = False
+        except EOFError:
+            # End of file reached before a DATA block.  Legitimate for an XTV file
+            # whose calculation has not yet written any data records; genuine header
+            # damage is caught by the record-length check below.  Any other exception
+            # now propagates - a misparsed header must never be silently read from.
+            pass
 
         #print("XTV Precision = " + str(self.SB.xtvRes))
         #print("Data Length = " + str(self.SB.dataLen))
         #print("Record Length = " + str(recordLength))
-        #assert recordLength == self.SB.dataLen
+        # Reconciliation cross-check: the record length accumulated from the TD
+        # channels in the header must equal the per-edit data length declared in the
+        # Starting Block.  A mismatch means every later channel offset is wrong and
+        # reads would silently return a neighboring variable's data.  Raised rather
+        # than asserted - asserts are stripped under python -O.
+        if recordLength != self.SB.dataLen:
+            raise XTVError(err_codes['RECORD_LEN_ERR'], self.xtvFile.name)
 
         # Now reach into each time edit, get its time value, and save it in an array.
         for i in range(self.SB.nPoints):
             self.up.set_position(self.SB.dataStart + i*self.SB.dataLen + stride)
             self.times.append(self.up.unpack_fp_scalar(self.SB.xtvRes))
 
-        self.opened = True
-
         #print( self.times)
         if not self.times:
            raise XTVError(err_codes['TIME_EMPTY_ERR'], self.xtvFile.name)
+
+        # The time lookups below use bisect, which assumes an ordered array.  The
+        # comparison is non-strict so duplicate edits from a restart file pass.
+        for i in range(1, len(self.times)):
+            if self.times[i] < self.times[i-1]:
+                raise XTVError(err_codes['TIME_ORDER_ERR'], self.xtvFile.name)
 
         #for comp in self.components.itervalues():
             #print( comp.fI)
