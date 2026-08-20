@@ -83,6 +83,7 @@ err_codes = {
              'HDR_FORMAT_ERR'      : "!! XTV Error !! - Unsupported XTV format - only MUX format files can be parsed",
              'RECORD_LEN_ERR'      : "!! XTV Error !! - Header record length does not match Starting Block data length - channel offsets would be wrong",
              'TIME_ORDER_ERR'      : "!! XTV Error !! - Time points in the XTV file are not in increasing order",
+             'FREQ_ERR'            : "!! XTV Error !! - Requested channel is not time-dependent (freqAt != TD) - it has no data records",
             }
 
 
@@ -110,6 +111,7 @@ class _Channel(object):
         self.comp = comp
         self.ncells = None
         self.startIncrement = startIncrement
+        self.freqAt = None    # set from the VARD block; only "TD" channels carry data records
 
 
 class _Template(object):
@@ -957,7 +959,10 @@ class XtvFile(object):
 
             if varName in _fineMeshVars:
                 cell = 1  # Need the entire array so start at the first mesh location
-                startingPoint = self.components.get((id,compType)).channels.get('zht').startIncrement + (cell-1) * 4
+                zhtChannel = self.components.get((id,compType)).channels.get('zht')
+                if zhtChannel is None or zhtChannel.freqAt != "TD":
+                    raise XTVError(err_codes['FREQ_ERR'], self.xtvFile.name)
+                startingPoint = zhtChannel.startIncrement + (cell-1) * 4
                 startingEdit = bisect.bisect_right(self.times, float(time))
                 self.up.set_position(self.SB.dataStart + (startingEdit-1)*self.SB.dataLen + startingPoint)
                 zLocs = self.up.unpack_fp_array(vLength, self.SB.xtvRes)
