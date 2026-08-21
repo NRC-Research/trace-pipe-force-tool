@@ -34,12 +34,21 @@ class SegmentConfig:
             comp["type"] = str(comp["type"]).lower()
             comp["cells"] = [int(c) for c in comp["cells"]]
 
-            # cell_length is optional, but a zero or negative value silently removes
-            # this component's shear and gravity contribution - the boundary terms
-            # keep the result looking plausible - so reject it rather than compute
-            # with it.  Only presence and type were checked before, which is what
-            # let an honest typo through.
-            if comp.get("cell_length") is not None:
+            # cell_length is required.  The only alternative the tool ever had was to
+            # derive it from the XTV vol channel, but vol is time-independent and so
+            # carries no per-edit data record; the offset computed for it indexes into
+            # a neighbouring channel.  There is no way to obtain a length from the file.
+            # A zero or negative value is rejected for the same reason it must not be
+            # computed with: it removes this component's shear and gravity contribution
+            # while the boundary terms keep the result looking plausible.
+            if comp.get("cell_length") is None:
+                raise ConfigurationError(
+                    f"Component at index {idx} in segment '{self.name}' must specify "
+                    f"'cell_length', the length of each cell in metres. It cannot be "
+                    f"derived from the XTV file: the vol channel is time-independent and "
+                    f"has no data records to read."
+                )
+            else:
                 try:
                     cell_length = float(comp["cell_length"])
                 except (TypeError, ValueError):
