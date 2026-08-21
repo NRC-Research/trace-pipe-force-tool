@@ -1,3 +1,4 @@
+import math
 import yaml
 import os
 
@@ -32,6 +33,28 @@ class SegmentConfig:
             comp["id"] = int(comp["id"])
             comp["type"] = str(comp["type"]).lower()
             comp["cells"] = [int(c) for c in comp["cells"]]
+
+            # cell_length is optional, but a zero or negative value silently removes
+            # this component's shear and gravity contribution - the boundary terms
+            # keep the result looking plausible - so reject it rather than compute
+            # with it.  Only presence and type were checked before, which is what
+            # let an honest typo through.
+            if comp.get("cell_length") is not None:
+                try:
+                    cell_length = float(comp["cell_length"])
+                except (TypeError, ValueError):
+                    raise ConfigurationError(
+                        f"Component at index {idx} in segment '{self.name}' has a non-numeric "
+                        f"'cell_length' ({comp['cell_length']!r})."
+                    )
+                if not math.isfinite(cell_length) or cell_length <= 0.0:
+                    raise ConfigurationError(
+                        f"Component at index {idx} in segment '{self.name}' has 'cell_length' "
+                        f"{cell_length!r}; it must be a finite length greater than zero. A "
+                        f"non-positive length zeroes the shear and gravity terms for every cell "
+                        f"in this component while the boundary terms keep the output plausible."
+                    )
+                comp["cell_length"] = cell_length
 
         # Parse inlet and outlet junction definitions
         self.inlet_junction = self._parse_junction(data.get("inlet_junction"), f"Segment '{self.name}' inlet_junction")
