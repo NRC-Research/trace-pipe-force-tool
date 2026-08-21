@@ -1048,6 +1048,13 @@ class XtvFile(object):
         except XTVError as e:   # if the component ID, component type or variable name are unknown, raise an exception
            raise e
 
+        # Only channels with freqAt == "TD" contribute to the per-edit data record
+        # layout (see the VARD handling in __init__), so an offset computed for any
+        # other channel indexes into a neighbouring variable's data.  Refuse the read
+        # rather than return another channel's numbers.
+        if self.components.get((id,compType)).channels.get(varName.strip()).freqAt != "TD":
+            raise XTVError(err_codes['FREQ_ERR'], self.xtvFile.name)
+
         # Retrieve the dimensions associated with the current variable name.  If the variable has no
         # dimensions, it is likely a '0D' varName and we won't need them.  In that case, move on like
         # nothing happened.
