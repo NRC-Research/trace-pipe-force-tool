@@ -13,6 +13,7 @@ This test plan defines a suite of verification and validation cases to ensure th
 | **VAL-003** | Piping Area Discontinuity | Step change thrust ($P \Delta A$ and $\Delta(\rho u^2 A)$) | Static force balance |
 | **VAL-004** | 90-degree Piping Bend | Directional vector projection, momentum deflection | Momentum thrust formulation |
 | **VAL-005** | EPRI Safety/Relief Valve (S/RV) | Loop seal blowdown, transient two-phase dynamic loads | RELAP5 / R5FORCE Benchmark |
+| **VAL-006** | Static Column Gravity | Gravity term, direction vector projection and sign | Hydrostatics ($F = -\rho g V \, \hat{g}\cdot\hat{e}$) |
 
 ---
 
@@ -72,3 +73,16 @@ This test plan defines a suite of verification and validation cases to ensure th
 *   **Validation Source**:
     1.  **R5FORCE/MOD3s Results**: The R5FORCE manual (Section 6, Figures 10-17) documents the reference subforces ($SF_{101}$ to $SF_{108}$) and combined segment forces ($CF_{201}$ to $CF_{203}$) computed from RELAP5 output.
     2.  **Validation Protocol**: Since `trace_force` implements the identical Watkins pressure-shear formulation, executing `trace_force` on the TRACE equivalent of the EPRI model must yield force histories that match the RELAP5/R5FORCE curves.
+
+---
+
+### VAL-006: Static Column Gravity
+*   **Description**: Two independent static water columns (fill-pipe-break, zero flow, hydrostatic equilibrium at $300\text{ K}$ / $2\text{ MPa}$): a vertical 4-cell pipe ($\text{GRAV} = 1.0$) and a 4-cell pipe inclined $30^{\circ}$ from horizontal ($\text{GRAV} = 0.5$). Both segments use CONTINUED junctions, so the boundary terms vanish and, with the fluid at rest, the gravity term is the entire computed force.
+*   **Verification Target**:
+    1.  **Vertical column**: the force must equal the fluid weight projected on the upward segment axis:
+        $$F = \rho g V_{\text{total}} \, (\hat{g}\cdot\hat{e}) = -\rho g V_{\text{total}} \approx -7682\text{ N}$$
+        This fails loudly if the gravity term is wrong by any factor, including the sign.
+    2.  **Inclined column** ($\hat{e} = [\cos 30^{\circ}, 0, \sin 30^{\circ}]$): the projection is neither 0 nor 1, catching sign and normalisation errors together:
+        $$F = -\rho g V_{\text{total}} \sin 30^{\circ} \approx -3841\text{ N}$$
+*   **Motivation**: Issue #5 - every previously shipped configuration was horizontal ($g_{\text{proj}} = 0$), leaving the gravity half of the Watkins formulation unverified: an error confined to the gravity path would have passed the entire suite unnoticed.
+*   **Status**: Passed. (Vertical: $-7682.23\text{ N}$; inclined: $-3841.10\text{ N}$; both within $0.001\%$ of hydrostatic theory and flat to $10^{-4}\text{ N}$ over the $10\text{ s}$ run.)

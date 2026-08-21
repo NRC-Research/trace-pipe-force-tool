@@ -1,6 +1,6 @@
-# Unified Validation and Verification (V&V) Report: VAL-001 to VAL-004
+# Unified Validation and Verification (V&V) Report: VAL-001 to VAL-006
 
-This report documents the verification and validation results for Case VAL-001 through Case VAL-004 of the TRACE Piping Force post-processing tool. All computations were executed on the containerized TRACE executable and post-processed with `trace_force`.
+This report documents the verification and validation results for Case VAL-001 through Case VAL-004 and Case VAL-006 of the TRACE Piping Force post-processing tool. All computations were executed on the containerized TRACE executable and post-processed with `trace_force`.
 
 ---
 
@@ -12,6 +12,7 @@ This report documents the verification and validation results for Case VAL-001 t
 | **VAL-002** | Acoustic Wave / Water Hammer | Transient wave shock propagation | $+392,699.08\text{ N}$ (Peak) | $+441,668.44\text{ N}$ | **$+12.47\%$** (Overshoot) | **PASSED** |
 | **VAL-003** | Piping Area Discontinuity | Step contraction momentum change | $-275,298.74\text{ N}$ (Static) | $-275,180.78\text{ N}$ | **$-0.04\%$** | **PASSED** |
 | **VAL-004** | 90-degree Piping Bend | Directional vector projection | $F_x = -375,851.20\text{ N}$<br>$F_y = +375,338.32\text{ N}$ | $F_x = -375,862.63\text{ N}$<br>$F_y = +375,325.24\text{ N}$ | **$0.003\%$**<br>**$0.003\%$** | **PASSED** |
+| **VAL-006** | Static Column Gravity | Gravity term projection and sign | $F_{\text{vert}} = -7682.25\text{ N}$<br>$F_{30^{\circ}} = -3841.13\text{ N}$ | $F_{\text{vert}} = -7682.23\text{ N}$<br>$F_{30^{\circ}} = -3841.10\text{ N}$ | **$0.0004\%$**<br>**$0.0008\%$** | **PASSED** |
 
 ---
 
@@ -191,3 +192,45 @@ Post-processor results:
 
 ### 4. Directional Force Plot
 ![Case VAL-004 Elbow Force Plot](VAL_004_bend.png)
+
+---
+
+## VAL-006: Static Column Gravity
+
+### 1. Verification Setup
+
+Two independent static water columns in one TRACE run ([VAL_006.inp](VAL_006.inp)), each a fill-pipe-break train with zero fill velocity:
+
+- **Pipe 20 (vertical)**: 4 cells, $dx = 1.0\text{ m}$, $D = 0.5\text{ m}$, $A = 0.19634954\text{ m}^2$, $\text{GRAV} = 1.0$ on every edge.
+- **Pipe 50 (inclined $30^{\circ}$)**: identical geometry, $\text{GRAV} = 0.5$.
+
+Both columns settle to hydrostatic equilibrium under a $2\text{ MPa}$ break pressure at $300\text{ K}$: the converged per-cell pressure steps are $9781.3\text{ Pa}$ (vertical, $= \rho g \cdot 1\text{ m}$) and $4890.6\text{ Pa}$ (inclined, $= \rho g \cdot 0.5\text{ m}$), with residual velocities of order $10^{-10}\text{ m/s}$.
+
+The segment configuration ([segments_VAL_006.yaml](segments_VAL_006.yaml)) uses CONTINUED junctions at both ends of both segments, so the boundary terms vanish and the gravity term is the entire computed force. The vertical segment axis is $[0, 0, 1]$; the inclined axis is $[\cos 30^{\circ}, 0, \sin 30^{\circ}]$, exercising a projection that is neither 0 nor 1. With the fluid at rest the shear term is identically zero (the run uses `--mock-friction 0.005`, as the deck does not write `wfl`/`wfv`).
+
+This case closes the coverage gap of issue #5: every previously shipped configuration was horizontal, so the gravity half of the Watkins formulation was unverified by any V&V result.
+
+### 2. Analytical Comparison
+
+Hydrostatics gives the force of the fluid on the piping along the segment axis directly:
+
+$$F = \rho g V_{\text{total}} \, (\hat{g} \cdot \hat{e}), \qquad V_{\text{total}} = 4 \times 0.19634954 = 0.78539816\text{ m}^3$$
+
+With $\rho \approx 997.42\text{ kg/m}^3$ (water at $300\text{ K}$, $\sim 2\text{ MPa}$; TRACE reports $997.41$–$997.42$ across the cells):
+
+- **Vertical**: $F = -997.42 \times 9.80665 \times 0.78539816 = -7682.25\text{ N}$
+- **Inclined $30^{\circ}$**: $F = -7682.25 \times \sin 30^{\circ} = -3841.13\text{ N}$
+
+Post-processor results (steady over the full $10\text{ s}$ run, spread $< 10^{-4}\text{ N}$):
+
+- **Calculated Vertical Force**: $-7682.23\text{ N}$ (difference $0.0004\%$; against the XTV's own mixture densities, $3\times 10^{-6}\,\%$)
+- **Calculated Inclined Force**: $-3841.10\text{ N}$ (difference $0.0008\%$; exactly half the vertical force, verifying the projection)
+
+The negative sign is itself a verification target: the fluid weight acts along $-\hat{e}$ for an upward-pointing segment axis, and a sign error anywhere in the gravity path would flip it.
+
+### 3. Conclusion
+
+**PASSED**. The gravity term reproduces hydrostatic theory to $0.001\%$ in magnitude, with the correct sign, and scales exactly with the direction-vector projection at a non-trivial angle.
+
+### 4. Gravity Force Plot
+![Case VAL-006 Static Column Gravity Plot](VAL_006_gravity.png)
