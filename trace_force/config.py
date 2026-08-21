@@ -144,3 +144,23 @@ class AppConfig:
         self.segments = []
         for seg_data in segments_data:
             self.segments.append(SegmentConfig(seg_data))
+
+        # Results are collected into a dict keyed on segment name, and both output
+        # writers emit one column per key.  Two segments sharing a name therefore
+        # produce a single column holding whichever was computed last, while the CLI
+        # still reports the configured segment count and writes the file - an entire
+        # segment's dynamic loads can leave the stress input with no indication.
+        # Names are compared exactly, matching the key semantics of the dict this
+        # protects: names differing only in case or surrounding space are distinct
+        # keys and so produce distinct columns.
+        seen = {}
+        for idx, segment in enumerate(self.segments):
+            if segment.name in seen:
+                raise ConfigurationError(
+                    f"Duplicate segment name {segment.name!r}: the segments at index "
+                    f"{seen[segment.name]} and index {idx} both use it. Segment names key "
+                    f"the computed results and become the output column headings, so a "
+                    f"duplicate emits one column and silently discards the other "
+                    f"segment's forces."
+                )
+            seen[segment.name] = idx
