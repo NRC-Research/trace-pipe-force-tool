@@ -51,8 +51,19 @@ class ForceEngine:
                 roln = self.extractor.get_cell_variable(comp_id, cell_idx, "roln")
                 rovn = self.extractor.get_cell_variable(comp_id, cell_idx, "rovn")
                 rom = self.extractor.get_cell_variable(comp_id, cell_idx, "rom")
-                vol = self.extractor.get_cell_variable(comp_id, cell_idx, "vol")
                 fa = self.extractor.get_cell_variable(comp_id, cell_idx, "fa")
+
+                # Cell length is a per-component constant, so resolve it once here
+                # rather than per time step.  Only read the XTV vol channel when
+                # there is no configured length to use - vol is time-independent
+                # in every file examined, so the read is both unnecessary and
+                # unsound whenever cell_length is supplied.
+                cell_length = comp.get("cell_length")
+                if cell_length is not None:
+                    cell_length = float(cell_length)
+                    vol = None
+                else:
+                    vol = self.extractor.get_cell_variable(comp_id, cell_idx, "vol")
 
                 # Edge variables (velocities at junctions)
                 # Cell k is bounded by edge k (inlet) and edge k+1 (outlet)
@@ -78,10 +89,9 @@ class ForceEngine:
                     # Area & Length calculations
                     area = fa[t_idx]
                     
-                    # Try to get cell length from configuration
-                    length = comp.get("cell_length")
-                    if length is not None:
-                        length = float(length)
+                    # Cell length from configuration, else derived from the XTV volume
+                    if cell_length is not None:
+                        length = cell_length
                     else:
                         # Fallback to XTV vol variable (may be invalid or zero in some runs)
                         volume_xtv = vol[t_idx]
