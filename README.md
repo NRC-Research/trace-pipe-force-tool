@@ -159,6 +159,9 @@ This post-processing tool is integrated into the **SNAP** (Symbolic Nuclear Anal
 2. Extract the archive into the main SNAP directory (e.g., `<SNAP_HOME>/`).
 3. Restart SNAP and the Calculation Server to enable the Piping Force calculation step.
 
+### Working Example:
+[`test-validation/VAL_004.med`](test-validation/VAL_004.med) contains a configured job stream for the VAL-004 bend case — TRACE run → Piping Force step → AptPlot — with its segment configuration in [`test-validation/segments_VAL_004-b.yaml`](test-validation/segments_VAL_004-b.yaml) (the same two-segment bend decomposition as `segments_VAL_004.yaml`; the step passes `--mock-friction 0.005` because the VAL-004 TRACE run does not write `wfl`/`wfv`). Run through the CLI, that configuration reproduces the committed `VAL_004.th` exactly.
+
 
 
 
