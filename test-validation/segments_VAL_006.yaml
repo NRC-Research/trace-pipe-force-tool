@@ -1,0 +1,38 @@
+# VAL-006: static column gravity verification. Both segments use CONTINUED
+# junctions so the boundary terms vanish and, with zero flow, the gravity term
+# is the entire computed force:
+#   SegVertical: e = [0,0,1],  F = -rho*g*V_total          (~ -7682 N)
+#   SegIncline30: e = [cos30,0,sin30], F = -rho*g*V_total/2 (~ -3841 N)
+# The direction vectors point inlet -> outlet, matching the decks' grav terms
+# (1.0 and 0.5). Run with --mock-friction 0.005: the TRACE run does not write
+# wfl/wfv, and with the fluid at rest the shear term is zero regardless.
+
+settings:
+  ambient_pressure_pa: 101325.0
+  units: "METRIC"
+  output_format: "TH"
+
+segments:
+  - name: "VAL_006_SegVertical"
+    direction_vector: [0.0, 0.0, 1.0]
+    components:
+      - id: 20
+        type: "pipe"
+        cells: [1, 2, 3, 4]
+        cell_length: 1.0
+    inlet_junction:
+      type: "CONTINUED"
+    outlet_junction:
+      type: "CONTINUED"
+
+  - name: "VAL_006_SegIncline30"
+    direction_vector: [0.8660254, 0.0, 0.5]
+    components:
+      - id: 50
+        type: "pipe"
+        cells: [1, 2, 3, 4]
+        cell_length: 1.0
+    inlet_junction:
+      type: "CONTINUED"
+    outlet_junction:
+      type: "CONTINUED"
