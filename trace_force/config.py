@@ -106,11 +106,28 @@ class SegmentConfig:
         j_id = data.get("id")
         if j_id is not None:
             j_id = int(j_id)
-            
+
+        # 'area' was accepted here and stored as an "optional override", but nothing
+        # ever read it: the boundary force always uses the XTV flow area of the
+        # boundary cell.  An analyst supplying a nozzle area therefore got no effect
+        # and no warning, discoverable only by reading the source.  Reject it rather
+        # than continue accepting a setting that does nothing.
+        #
+        # It is not simply implemented, because the correct substitution is not
+        # settled: the OPEN branch of the boundary loop is commented as acting on
+        # (A_cell - A_j) but computes with A_cell, so wiring the override in would
+        # also decide that open question and change computed forces.
+        if data.get("area") is not None:
+            raise ConfigurationError(
+                f"{context} sets 'area', but the junction area override is not "
+                f"implemented: the boundary force is computed from the XTV flow area of "
+                f"the boundary cell, and this value would be ignored. Remove it rather "
+                f"than rely on it."
+            )
+
         return {
             "type": j_type,
             "id": j_id,
-            "area": data.get("area") # optional override
         }
 
 class AppConfig:
