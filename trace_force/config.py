@@ -1,15 +1,35 @@
 import math
+import re
 import yaml
 import os
 
 class ConfigurationError(Exception):
     pass
 
+
+# Segment names become column headings in both output formats.  The .th columns are
+# whitespace-delimited and the .frc header is comma-joined, so a name containing a
+# space, comma or newline changes how many columns the file appears to carry and
+# which segment each one describes - silently, since the writers join whatever they
+# are given.  A name beginning =, +, - or @ is additionally read as a live formula
+# when the .frc is opened in a spreadsheet, which is what that format exists for.
+_SEGMENT_NAME_RE = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9_-]*$")
+
 class SegmentConfig:
     def __init__(self, data):
         self.name = data.get("name")
-        if not self.name:
+        if self.name is None or self.name == "":
             raise ConfigurationError("Segment must have a name.")
+        self.name = str(self.name)
+        if not _SEGMENT_NAME_RE.match(self.name):
+            raise ConfigurationError(
+                f"Segment name {self.name!r} is not usable as an output column heading. "
+                f"Use letters, digits, underscores and hyphens, starting with a letter, "
+                f"digit or underscore. A name containing a space, comma or newline "
+                f"changes the column layout of the .th and .frc files without changing "
+                f"the data, and one beginning =, +, - or @ is treated as a formula when "
+                f"the .frc is opened in a spreadsheet."
+            )
         
         self.direction_vector = data.get("direction_vector")
         if not self.direction_vector or len(self.direction_vector) != 3:

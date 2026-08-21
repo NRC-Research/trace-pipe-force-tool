@@ -69,8 +69,8 @@ settings:
   output_format: "TH"      # TH (space-separated ASCII) or FRC (CSV for CAESAR II)
 
 segments:
-  - name: "Test_Segment_1"
-    direction_vector: [0.0, 0.0, 1.0]  # Flow direction vector (Z-axis)
+  - name: "Test_Segment_1"            # Letters, digits, _ and - only; becomes a column heading
+    direction_vector: [0.0, 0.0, 1.0]  # Flow direction: must be a UNIT vector
     components:
       - id: 108
         type: "pipe"
@@ -81,6 +81,20 @@ segments:
     outlet_junction:
       type: "BOUNDED"
 ```
+
+---
+
+## 3a. Running the tests
+
+Configuration validation is covered by a small test suite that needs no packages
+beyond the tool's own dependencies:
+
+```bash
+python3 -m unittest discover -s tests
+```
+
+The cases are ordinary `unittest.TestCase` classes, so `pytest` collects them
+unchanged if you prefer to run them that way.
 
 ---
 
