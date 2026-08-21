@@ -16,8 +16,35 @@ class SegmentConfig:
             raise ConfigurationError(f"Segment '{self.name}' must have a 3D direction_vector [x, y, z].")
         try:
             self.direction_vector = [float(x) for x in self.direction_vector]
-        except ValueError:
+        except (TypeError, ValueError):
             raise ConfigurationError(f"Segment '{self.name}' direction_vector elements must be numbers.")
+
+        # direction_vector is used in exactly one place: as the axis the gravity
+        # vector is projected onto.  Its magnitude therefore scales the gravity term
+        # directly - the zero vector deletes it, [0, 0, 5.2] multiplies it by 5.2 -
+        # and nothing downstream notices, because the projection stays internally
+        # consistent and the pressure and momentum terms are unaffected.  Only
+        # presence, length and float-ness were checked before, which is what let a
+        # displacement-style vector through.
+        if not all(math.isfinite(x) for x in self.direction_vector):
+            raise ConfigurationError(
+                f"Segment '{self.name}' direction_vector elements must be finite numbers."
+            )
+        norm = math.sqrt(sum(x * x for x in self.direction_vector))
+        if norm == 0.0:
+            raise ConfigurationError(
+                f"Segment '{self.name}' direction_vector is the zero vector. It must be a unit "
+                f"vector giving the segment's orientation; a zero vector removes the gravity "
+                f"contribution from this segment entirely."
+            )
+        if abs(norm - 1.0) > 1e-6:
+            unit = ", ".join(f"{x / norm:.6g}" for x in self.direction_vector)
+            raise ConfigurationError(
+                f"Segment '{self.name}' direction_vector {self.direction_vector} has magnitude "
+                f"{norm:.6g}, but it must be a unit vector. The magnitude scales the gravity term "
+                f"directly, so this would multiply that term by {norm:.6g}. If the orientation is "
+                f"correct, use [{unit}]."
+            )
 
         self.components = data.get("components", [])
         if not self.components:
