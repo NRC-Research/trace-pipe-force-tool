@@ -11,9 +11,17 @@
 set -uo pipefail
 
 msg_file="$1"
-# Strip comment lines -- git's own template mentions nothing relevant, but a
-# user's commented-out notes should not trip the hook.
-msg=$(grep -v '^#' "$msg_file" || true)
+# Scan the file verbatim, comments included. Git strips '#' lines only for
+# editor-based commits (cleanup=strip); with -m/-F the default cleanup is
+# 'whitespace', and with cleanup=verbatim they are always kept -- so a
+# '#'-prefixed attribution (e.g. a markdown heading) would reach the recorded
+# history unchecked if we stripped here. A command-line --cleanup= override is
+# invisible to this hook, so mode detection is unsound; scanning everything is
+# the only safe canonicalization. Git's own template mentions nothing that
+# matches the patterns below. The rare cost: a commented-out attribution in an
+# editor session is blocked even though git would strip it -- delete the line
+# to proceed. Blocking is the safe direction.
+msg=$(cat -- "$msg_file" || true)
 
 # Attribution patterns, not mere mentions.
 patterns=(
