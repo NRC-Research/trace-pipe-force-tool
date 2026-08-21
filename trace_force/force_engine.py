@@ -53,17 +53,23 @@ class ForceEngine:
                 rom = self.extractor.get_cell_variable(comp_id, cell_idx, "rom")
                 fa = self.extractor.get_cell_variable(comp_id, cell_idx, "fa")
 
-                # Cell length is a per-component constant, so resolve it once here
-                # rather than per time step.  Only read the XTV vol channel when
-                # there is no configured length to use - vol is time-independent
-                # in every file examined, so the read is both unnecessary and
-                # unsound whenever cell_length is supplied.
-                cell_length = comp.get("cell_length")
-                if cell_length is not None:
-                    cell_length = float(cell_length)
-                    vol = None
-                else:
-                    vol = self.extractor.get_cell_variable(comp_id, cell_idx, "vol")
+                # A non-positive or non-finite flow area zeroes this cell's shear and
+                # gravity terms (perimeter and volume both collapse) while the boundary
+                # terms keep the output plausible.  Checked once per cell rather than
+                # per time step, and named so the offending cell is identifiable.
+                for t_idx, cell_area in enumerate(fa):
+                    if not math.isfinite(cell_area) or cell_area <= 0.0:
+                        raise ValueError(
+                            f"Invalid flow area {cell_area!r} for component {comp_id}, cell "
+                            f"{cell_idx}, at t={self.times[t_idx]:g} s. The flow area must be "
+                            f"finite and greater than zero; a non-positive area would zero this "
+                            f"cell's shear and gravity contributions without changing the "
+                            f"boundary terms."
+                        )
+
+                # Validated as a positive finite number by SegmentConfig, and constant
+                # for the component, so resolve it once rather than per time step.
+                cell_length = comp["cell_length"]
 
                 # Edge variables (velocities at junctions)
                 # Cell k is bounded by edge k (inlet) and edge k+1 (outlet)
@@ -88,15 +94,8 @@ class ForceEngine:
 
                     # Area & Length calculations
                     area = fa[t_idx]
-                    
-                    # Cell length from configuration, else derived from the XTV volume
-                    if cell_length is not None:
-                        length = cell_length
-                    else:
-                        # Fallback to XTV vol variable (may be invalid or zero in some runs)
-                        volume_xtv = vol[t_idx]
-                        length = volume_xtv / area if area > 0 else 0.0
-                    
+                    length = cell_length
+
                     # Compute volume from area and length
                     volume = area * length
 

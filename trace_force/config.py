@@ -1,3 +1,4 @@
+import math
 import yaml
 import os
 
@@ -32,6 +33,37 @@ class SegmentConfig:
             comp["id"] = int(comp["id"])
             comp["type"] = str(comp["type"]).lower()
             comp["cells"] = [int(c) for c in comp["cells"]]
+
+            # cell_length is required.  The only alternative the tool ever had was to
+            # derive it from the XTV vol channel, but vol is time-independent and so
+            # carries no per-edit data record; the offset computed for it indexes into
+            # a neighbouring channel.  There is no way to obtain a length from the file.
+            # A zero or negative value is rejected for the same reason it must not be
+            # computed with: it removes this component's shear and gravity contribution
+            # while the boundary terms keep the result looking plausible.
+            if comp.get("cell_length") is None:
+                raise ConfigurationError(
+                    f"Component at index {idx} in segment '{self.name}' must specify "
+                    f"'cell_length', the length of each cell in metres. It cannot be "
+                    f"derived from the XTV file: the vol channel is time-independent and "
+                    f"has no data records to read."
+                )
+            else:
+                try:
+                    cell_length = float(comp["cell_length"])
+                except (TypeError, ValueError):
+                    raise ConfigurationError(
+                        f"Component at index {idx} in segment '{self.name}' has a non-numeric "
+                        f"'cell_length' ({comp['cell_length']!r})."
+                    )
+                if not math.isfinite(cell_length) or cell_length <= 0.0:
+                    raise ConfigurationError(
+                        f"Component at index {idx} in segment '{self.name}' has 'cell_length' "
+                        f"{cell_length!r}; it must be a finite length greater than zero. A "
+                        f"non-positive length zeroes the shear and gravity terms for every cell "
+                        f"in this component while the boundary terms keep the output plausible."
+                    )
+                comp["cell_length"] = cell_length
 
         # Parse inlet and outlet junction definitions
         self.inlet_junction = self._parse_junction(data.get("inlet_junction"), f"Segment '{self.name}' inlet_junction")

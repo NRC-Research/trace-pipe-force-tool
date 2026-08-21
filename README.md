@@ -75,6 +75,7 @@ segments:
       - id: 108
         type: "pipe"
         cells: [1, 2, 3, 4, 5, 6, 7, 8]  # Cell indices inside component
+        cell_length: 0.5                 # Required: length of each cell (m), > 0
     inlet_junction:
       type: "BOUNDED"      # CONTINUED, BOUNDED, or OPEN
     outlet_junction:
