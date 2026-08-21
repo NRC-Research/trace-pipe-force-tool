@@ -79,8 +79,19 @@ segments:
     inlet_junction:
       type: "BOUNDED"      # CONTINUED, BOUNDED, or OPEN
     outlet_junction:
-      type: "BOUNDED"
+      type: "OPEN"
+      area: 0.004          # OPEN only: junction flow area A_j (m^2), > 0
 ```
+
+Junction types and the boundary force they contribute:
+
+* **`BOUNDED`** — a closed end. Full pressure-plus-momentum thrust on the cell flow area.
+* **`CONTINUED`** — the segment continues into further piping. No boundary force.
+* **`OPEN`** — an open end. The force acts on the annular lip `(A_cell - A_j)` left where
+  the opening is smaller than the cell bore, with `A_j` given by `area`. Omitting `area`
+  means a plain open exit: `A_j = A_cell`, zero lip, zero force. Jet reaction (thrust) is
+  not computed. `area` is only accepted on `OPEN` junctions — on the other types it would
+  have no effect and is rejected.
 
 ---
 

@@ -187,12 +187,37 @@ class DirectionVector(ConfigCase):
 
 
 class JunctionArea(ConfigCase):
-    """The override was accepted and never applied; it is now refused."""
+    """A_j is the annular-lip quantity of an OPEN junction and of nothing else."""
 
-    def test_area_override_rejected_rather_than_silently_ignored(self):
+    def test_area_on_open_junction_accepted(self):
+        config = base_config()
+        config["segments"][0]["outlet_junction"] = {"type": "OPEN", "area": 0.0123}
+        loaded = self.load(config)
+        self.assertEqual(loaded.segments[0].outlet_junction["area"], 0.0123)
+
+    def test_area_on_bounded_junction_rejected(self):
+        # BOUNDED computes with the full cell area, so an 'area' there would be
+        # accepted and ignored - the defect #7 closed. It stays rejected.
         config = base_config()
         config["segments"][0]["outlet_junction"]["area"] = 0.0123
-        self.assertRejected(config, "junction area override is not")
+        self.assertRejected(config, "BOUNDED junction does not use it")
+
+    def test_area_on_continued_junction_rejected(self):
+        config = base_config()
+        config["segments"][0]["inlet_junction"] = {"type": "CONTINUED", "area": 0.0123}
+        self.assertRejected(config, "CONTINUED junction does not use it")
+
+    def test_non_positive_and_non_finite_areas_rejected(self):
+        for bad in (0.0, -0.01, float("inf"), float("nan")):
+            with self.subTest(area=bad):
+                config = base_config()
+                config["segments"][0]["outlet_junction"] = {"type": "OPEN", "area": bad}
+                self.assertRejected(config, "greater than zero")
+
+    def test_non_numeric_area_rejected(self):
+        config = base_config()
+        config["segments"][0]["outlet_junction"] = {"type": "OPEN", "area": "wide"}
+        self.assertRejected(config, "non-numeric 'area'")
 
     def test_junctions_without_an_area_are_unaffected(self):
         loaded = self.load(base_config())

@@ -171,6 +171,17 @@ class ForceEngine:
             # 1. Inlet boundary force F_1
             if in_type == "BOUNDED":
                 f_inlet = -(x_in - p_ambient) * a_in
+            elif in_type == "OPEN":
+                # An open end acts on the annular lip (A_cell - A_j): the part of
+                # the end plane not covered by the junction's opening.  A_j comes
+                # from the junction's configured 'area' and defaults to the cell
+                # area, so a plain open end contributes nothing.  Jet reaction
+                # (thrust) is not computed here.
+                a_j_in = segment.inlet_junction.get("area")
+                if a_j_in is None:
+                    f_inlet = 0.0
+                else:
+                    f_inlet = -(x_in - p_ambient) * (a_in - a_j_in)
             elif in_type == "CONTINUED":
                 # For Continued, assume no area change as a baseline
                 f_inlet = 0.0
@@ -181,10 +192,13 @@ class ForceEngine:
             if out_type == "BOUNDED":
                 f_outlet = (x_out - p_ambient) * a_out
             elif out_type == "OPEN":
-                # Open junction acts on (A_cell - A_j)
-                # For a pipe exit, A_j = A_cell generally, so this goes to zero.
-                # Jet reaction (thrust) is calculated separately if needed.
-                f_outlet = (x_out - p_ambient) * a_out
+                # Same annular-lip force as the OPEN inlet, opposite sign
+                # convention.
+                a_j_out = segment.outlet_junction.get("area")
+                if a_j_out is None:
+                    f_outlet = 0.0
+                else:
+                    f_outlet = (x_out - p_ambient) * (a_out - a_j_out)
             elif out_type == "CONTINUED":
                 f_outlet = 0.0
             else:
