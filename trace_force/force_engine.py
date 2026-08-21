@@ -58,6 +58,20 @@ class ForceEngine:
                 # there is no configured length to use - vol is time-independent
                 # in every file examined, so the read is both unnecessary and
                 # unsound whenever cell_length is supplied.
+                # A non-positive or non-finite flow area zeroes this cell's shear and
+                # gravity terms (perimeter and volume both collapse) while the boundary
+                # terms keep the output plausible.  Checked once per cell rather than
+                # per time step, and named so the offending cell is identifiable.
+                for t_idx, cell_area in enumerate(fa):
+                    if not math.isfinite(cell_area) or cell_area <= 0.0:
+                        raise ValueError(
+                            f"Invalid flow area {cell_area!r} for component {comp_id}, cell "
+                            f"{cell_idx}, at t={self.times[t_idx]:g} s. The flow area must be "
+                            f"finite and greater than zero; a non-positive area would zero this "
+                            f"cell's shear and gravity contributions without changing the "
+                            f"boundary terms."
+                        )
+
                 cell_length = comp.get("cell_length")
                 if cell_length is not None:
                     cell_length = float(cell_length)
