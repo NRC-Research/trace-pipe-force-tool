@@ -127,28 +127,45 @@ class SegmentConfig:
         if j_id is not None:
             j_id = int(j_id)
 
-        # 'area' was accepted here and stored as an "optional override", but nothing
-        # ever read it: the boundary force always uses the XTV flow area of the
-        # boundary cell.  An analyst supplying a nozzle area therefore got no effect
-        # and no warning, discoverable only by reading the source.  Reject it rather
-        # than continue accepting a setting that does nothing.
-        #
-        # It is not simply implemented, because the correct substitution is not
-        # settled: the OPEN branch of the boundary loop is commented as acting on
-        # (A_cell - A_j) but computes with A_cell, so wiring the override in would
-        # also decide that open question and change computed forces.
-        if data.get("area") is not None:
-            raise ConfigurationError(
-                f"{context} sets 'area', but the junction area override is not "
-                f"implemented: the boundary force is computed from the XTV flow area of "
-                f"the boundary cell, and this value would be ignored. Remove it rather "
-                f"than rely on it."
-            )
+        # 'area' is the junction flow area A_j, and it is meaningful only for an
+        # OPEN junction: the boundary force there acts on the annular lip
+        # (A_cell - A_j) left where the junction's opening is smaller than the
+        # cell bore.  Without it, A_j is taken equal to the cell area - the
+        # plain open exit, whose lip is zero.  For BOUNDED the force acts on
+        # the full closed end and for CONTINUED there is no end at all, so an
+        # 'area' on those types would do nothing; it is rejected rather than
+        # accepted and ignored.
+        area = data.get("area")
+        if area is not None:
+            if j_type != "OPEN":
+                raise ConfigurationError(
+                    f"{context} sets 'area', but a {j_type} junction does not use it: "
+                    f"the boundary force is computed from the XTV flow area of the "
+                    f"boundary cell (BOUNDED) or is zero (CONTINUED). Remove it, or use "
+                    f"type OPEN if the force on the annular lip around a smaller "
+                    f"opening is what is intended."
+                )
+            try:
+                area = float(area)
+            except (TypeError, ValueError):
+                raise ConfigurationError(
+                    f"{context} has a non-numeric 'area' ({data.get('area')!r})."
+                )
+            if not math.isfinite(area) or area <= 0.0:
+                raise ConfigurationError(
+                    f"{context} 'area' is {area!r}; it must be a finite junction flow "
+                    f"area greater than zero, in square metres. To model a fully open "
+                    f"plain exit, omit 'area' instead - the junction area then equals "
+                    f"the cell area and the lip force is zero."
+                )
 
-        return {
+        junction = {
             "type": j_type,
             "id": j_id,
         }
+        if area is not None:
+            junction["area"] = area
+        return junction
 
 class AppConfig:
     def __init__(self, filepath):
