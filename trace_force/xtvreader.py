@@ -82,6 +82,9 @@ err_codes = {
              'HDR_UNPACK_ERR'      : "!! XTV Error !! - Failed to unpack the XTV Starting Block",
              'HDR_FORMAT_ERR'      : "!! XTV Error !! - Unsupported XTV format - only MUX format files can be parsed",
              'RECORD_LEN_ERR'      : "!! XTV Error !! - Header record length does not match Starting Block data length - channel offsets would be wrong",
+             'BLOCK_JUMP_ERR'      : "!! XTV Error !! - Invalid header block size - block does not advance the file position",
+             'DATA_LEN_ERR'        : "!! XTV Error !! - Invalid Starting Block - data record length (dataLen) must be positive",
+             'DATA_BOUNDS_ERR'     : "!! XTV Error !! - Invalid Starting Block - time edit records extend beyond the end of the file",
              'TIME_ORDER_ERR'      : "!! XTV Error !! - Time points in the XTV file are not in increasing order",
              'FREQ_ERR'            : "!! XTV Error !! - Requested channel is not time-dependent (freqAt != TD) - it has no data records",
             }
@@ -431,6 +434,15 @@ class XtvFile(object):
                 elif blockType == "DATA":
                     break
 
+                # jump is a raw signed int read from the block.  The only exits from
+                # this loop are the DATA break above or an exception, so a block whose
+                # size does not move the position forward would re-parse the identical
+                # block forever - every read succeeds, no exception fires, and the
+                # process spins silently.  Rejecting jump <= 0 makes progress strictly
+                # monotonic, bounding the loop by the file size.  Raised after the DATA
+                # break so a terminal block's size is never inspected.
+                if jump <= 0:
+                    raise XTVError(err_codes['BLOCK_JUMP_ERR'], self.xtvFile.name)
                 self.up.set_position(start+jump)
         except EOFError:
             # End of file reached before a DATA block.  Legitimate for an XTV file
@@ -449,6 +461,23 @@ class XtvFile(object):
         # than asserted - asserts are stripped under python -O.
         if recordLength != self.SB.dataLen:
             raise XTVError(err_codes['RECORD_LEN_ERR'], self.xtvFile.name)
+
+        # Validate the Starting Block record layout before walking the time edits.
+        # dataStart, dataLen, and nPoints are raw ints read from the file.  With
+        # dataLen == 0 the per-iteration seek offset below is constant and in-file,
+        # so the EOFError backstop never fires and the loop appends up to nPoints
+        # floats - an allocation decoupled from the file size.  Bounding the record
+        # window against the actual file size keeps the loop finite and in-file:
+        # together these checks imply the iteration count cannot exceed the file
+        # size in bytes.  nPoints <= 0 falls through to the TIME_EMPTY_ERR check
+        # below, preserving that loud path exactly.
+        if self.SB.nPoints > 0:
+            if self.SB.dataLen <= 0:
+                raise XTVError(err_codes['DATA_LEN_ERR'], self.xtvFile.name)
+            self.xtvFile.seek(0, os.SEEK_END)
+            fileSize = self.xtvFile.tell()
+            if self.SB.dataStart < 0 or self.SB.dataStart + self.SB.nPoints*self.SB.dataLen > fileSize:
+                raise XTVError(err_codes['DATA_BOUNDS_ERR'], self.xtvFile.name)
 
         # Now reach into each time edit, get its time value, and save it in an array.
         for i in range(self.SB.nPoints):
