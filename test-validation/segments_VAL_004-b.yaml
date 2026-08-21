@@ -1,0 +1,40 @@
+# Configuration for the PipingForceStep in the VAL_004.med job stream
+# (TRACE -> Piping Force -> AptPlot; see README section 6). Same two-segment
+# bend decomposition as segments_VAL_004.yaml: the 90-degree elbow sits at the
+# edge between cells 2 and 3 (k = 0.2), so the X-leg and Y-leg are separate
+# segments joined by CONTINUED junctions. Started from a
+# trace_force_make_config.py skeleton, which put all four cells in one
+# segment - a straight segment cannot represent a bend; the direction_vector
+# applies to every cell it covers.
+# The step runs with --mock-friction 0.005: the VAL_004 TRACE run does not
+# write wfl/wfv (graphLevel is not 'full').
+
+settings:
+  ambient_pressure_pa: 101325.0
+  units: "METRIC"
+  output_format: "TH"
+
+segments:
+  - name: "VAL_004_SegX"
+    direction_vector: [1.0, 0.0, 0.0]
+    components:
+      - id: 20
+        type: "pipe"
+        cells: [1, 2]
+        cell_length: 1.0
+    inlet_junction:
+      type: "BOUNDED"
+    outlet_junction:
+      type: "CONTINUED"
+
+  - name: "VAL_004_SegY"
+    direction_vector: [0.0, 1.0, 0.0]
+    components:
+      - id: 20
+        type: "pipe"
+        cells: [3, 4]
+        cell_length: 1.0
+    inlet_junction:
+      type: "CONTINUED"
+    outlet_junction:
+      type: "BOUNDED"
