@@ -205,5 +205,76 @@ class JunctionArea(ConfigCase):
         self.assertRejected(config, "must be CONTINUED, BOUNDED, or OPEN")
 
 
+class LoaderBounds(ConfigCase):
+    """The YAML load itself must be bounded.
+
+    segments.yaml is received from other teams, and every validation above runs
+    only after yaml has already built the document. PyYAML flattens merge keys
+    ('<<') by concatenating the merged pair lists without limit, so a
+    sub-kilobyte document of nested '<<: [*a, *a, ...]' merges allocates
+    multiplicatively inside the load - a file size cap alone cannot stop it.
+    """
+
+    def load_text(self, text):
+        handle = tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False)
+        handle.write(text)
+        handle.close()
+        self.addCleanup(os.unlink, handle.name)
+        return AppConfig(handle.name)
+
+    def assertTextRejected(self, text, *expected_fragments):
+        with self.assertRaises(ConfigurationError) as caught:
+            self.load_text(text)
+        message = str(caught.exception)
+        for fragment in expected_fragments:
+            self.assertIn(fragment, message)
+
+    def test_merge_key_bomb_rejected_during_load(self):
+        lines = ["l0: &l0 {k: 1}"]
+        for d in range(1, 9):
+            refs = ", ".join(["*l%d" % (d - 1)] * 9)
+            lines.append("l%d: &l%d {<<: [%s]}" % (d, d, refs))
+        bomb = "\n".join(lines)
+        self.assertLess(len(bomb), 1024)  # well under the size cap by design
+        self.assertTextRejected(bomb, "mapping expansion exceeds")
+
+    def test_oversized_file_rejected(self):
+        config = base_config()
+        padding = "# " + "x" * (1024 * 1024) + "\n"
+        self.assertTextRejected(
+            padding + yaml.safe_dump(config), "Configuration file too large"
+        )
+
+    def test_ordinary_merge_keys_still_resolve(self):
+        # The bound must not break safe_load semantics for sane documents.
+        text = (
+            "settings: {units: METRIC, output_format: TH}\n"
+            "pipe_defaults: &pipe {type: pipe, cell_length: 0.5}\n"
+            "segments:\n"
+            "  - name: Test_Segment\n"
+            "    direction_vector: [1.0, 0.0, 0.0]\n"
+            "    components:\n"
+            "      - {<<: *pipe, id: 20, cells: [1, 2]}\n"
+            "    inlet_junction: {type: BOUNDED}\n"
+            "    outlet_junction: {type: BOUNDED}\n"
+        )
+        loaded = self.load_text(text)
+        self.assertEqual(loaded.segments[0].components[0]["cell_length"], 0.5)
+
+    def test_repository_configs_still_load(self):
+        # Named explicitly rather than globbed, so an in-progress scratch
+        # config sitting untracked in the directory cannot fail the suite.
+        repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        for name in (
+            "segments_VAL_001.yaml",
+            "segments_VAL_001_friction_only.yaml",
+            "segments_VAL_002.yaml",
+            "segments_VAL_003.yaml",
+            "segments_VAL_004.yaml",
+        ):
+            with self.subTest(name=name):
+                AppConfig(os.path.join(repo, "test-validation", name))
+
+
 if __name__ == "__main__":
     unittest.main()

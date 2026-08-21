@@ -7,6 +7,41 @@ class ConfigurationError(Exception):
     pass
 
 
+# Largest configuration file the loader will accept.  The configurations in this
+# repository are all under a kilobyte; 1 MB leaves generous headroom while
+# bounding what the YAML loader is asked to parse.
+_MAX_CONFIG_BYTES = 1024 * 1024
+
+# Cap on total mapping entries seen while flattening merge keys ('<<').  PyYAML
+# concatenates merged pair lists without limit, so a sub-kilobyte document of
+# nested '<<: [*a, *a, ...]' merges expands multiplicatively inside safe_load,
+# before any of the validation below ever runs.  The size cap alone cannot stop
+# that, which is why this loader is load-bearing rather than belt-and-braces.
+_MAX_MAPPING_ENTRIES = 100000
+
+
+class _BoundedSafeLoader(yaml.SafeLoader):
+    """safe_load semantics with a bound on merge-key expansion.
+
+    ConstructorError is a yaml.YAMLError subclass, so tripping the bound is
+    reported through the same ConfigurationError path as any other parse
+    failure.
+    """
+
+    def __init__(self, stream):
+        super().__init__(stream)
+        self._mapping_entries = 0
+
+    def flatten_mapping(self, node):
+        super().flatten_mapping(node)
+        self._mapping_entries += len(node.value)
+        if self._mapping_entries > _MAX_MAPPING_ENTRIES:
+            raise yaml.constructor.ConstructorError(
+                None, None,
+                "mapping expansion exceeds %d entries" % _MAX_MAPPING_ENTRIES,
+                node.start_mark)
+
+
 # Segment names become column headings in both output formats.  The .th columns are
 # whitespace-delimited and the .frc header is comma-joined, so a name containing a
 # space, comma or newline changes how many columns the file appears to carry and
@@ -155,11 +190,19 @@ class AppConfig:
         if not os.path.exists(filepath):
             raise ConfigurationError(f"Configuration file not found: {filepath}")
         
+        # Read through the open handle with a hard cap, so the size actually
+        # parsed is the size checked - a stat-then-read pair could be raced.
         with open(filepath, "r") as f:
-            try:
-                data = yaml.safe_load(f)
-            except yaml.YAMLError as e:
-                raise ConfigurationError(f"Error parsing YAML configuration: {e}")
+            text = f.read(_MAX_CONFIG_BYTES + 1)
+        if len(text) > _MAX_CONFIG_BYTES:
+            raise ConfigurationError(
+                f"Configuration file too large (limit {_MAX_CONFIG_BYTES} bytes): {filepath}"
+            )
+
+        try:
+            data = yaml.load(text, Loader=_BoundedSafeLoader)
+        except yaml.YAMLError as e:
+            raise ConfigurationError(f"Error parsing YAML configuration: {e}")
 
         if not data:
             raise ConfigurationError("Configuration file is empty.")
