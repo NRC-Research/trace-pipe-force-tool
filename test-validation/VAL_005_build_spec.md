@@ -229,11 +229,59 @@ legacy method oscillating and Watkins not).
 
 ## 9. Work plan
 
-1. **Session A**: re-verify the (?) digits; build the Phase-1 TRACE deck
-   (VAL_005.inp) with trips; iterate until the transient sequence (§4 events)
-   reproduces; commit deck + this spec update.
+1. **Session A** — DONE: Phase-1 deck built (VAL_005.inp) and the §4 event
+   sequence reproduces; see §10.
 2. **Session B**: segments_VAL_005.yaml (one segment per SF), comparison
    script computing CFs and peak tables, plot overlays; judge against §7;
    document in plan/report/README as VAL-005 Phase 1.
 3. **Session C**: loop-seal variant deck + digitized Figures 13-17 overlay;
    final VAL-005 status.
+
+## 10. Session A results (Phase-1 deck)
+
+`VAL_005.inp` runs the full 2.0 s transient (TRACE V5.1831.1, ~1.6 s CPU,
+1983 graphics edits at 1 ms) with the event sequence:
+
+| Event | Reference | VAL_005.inp |
+|---|---|---|
+| Relief valve begins opening | 0.21 s | 0.206 s |
+| Isolation valve closes | 1.0 s | 1.0006 s |
+| Relief reclosure begins | 1.44 s | 1.451 s |
+
+A smoke-test force on the discharge long run already shows the reference's
+structure: negative spike at 0.215 s (opening wave), positive peak at
+1.459 s (reclosure hammer; reference 1.43-1.46 s), ~7 kN steady-blowdown
+plateau, zero before opening and after reclosure. `graphLevel='full'`
+delivers wfl/wfv, so no mock friction is involved.
+
+### Modeling decisions and deviations (documented in the deck comments)
+
+1. **Relief trip** is one 4-setpoint hysteresis trip (isrt = -3):
+   ON-reverse (close, vtb2) below 16.38 MPa, hold in the deadband,
+   ON-forward (open, vtb1) above 17.24 MPa; 40 ms strokes both ways.
+   TRACE's isrt sign/subrange semantics were confirmed against the code
+   source (CSEvalM.f90) after the first run showed isrt=+1 fires ON *below*
+   its setpoint.
+2. **Trip sensing at the accumulator outlet** (component 30 cell 2), not the
+   cell adjacent to the valve seat: static pressure next to a choked seat
+   collapses by the dynamic head (~MPa at near-sonic steam), exceeding the
+   0.86 MPa deadband and chattering the valve. The reference's reclosure at
+   1.44 s during accumulator blowdown implies quasi-static supply-side
+   sensing.
+3. **S/RV throat area calibrated**: avlve = 1.05E-3 m2 (~8% of the inlet
+   line area). The reference gives no throat area; this value makes the
+   isolated accumulator blowdown reach 16.38 MPa ~0.45 s after isolation,
+   matching the reference reclosure time. Session B must check it against
+   the Appendix H force magnitudes, which also scale with flow.
+4. **Reclose band widened** (setp(2) = 16.9 MPa): the closing valve
+   throttles the line and pressure recovers ~0.2 MPa; a narrow band cancels
+   the stroke mid-close and strands the valve partially open. A real S/RV
+   completes its spring-driven closure.
+5. **Abrupt-area-change model (nff = -1)** at the accumulator nozzles
+   (40:1), the inlet-line contraction, and both discharge expansions.
+   Without it the isolation-closure wave spikes past critical pressure at
+   the accumulator outlet nozzle and the run dies at t ~ 1.05 s.
+6. **Isolation closure stroke 10 ms** (reference: unspecified, "closed" at
+   1.0 s). Corner edges at component junctions are horizontal (TRACE
+   junction consistency); exact leg elevation sums are deferred to the
+   Phase-2 liquid variant, where gravity heads matter.
