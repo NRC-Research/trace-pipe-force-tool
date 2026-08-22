@@ -1,0 +1,422 @@
+free format
+*m: CODE:TRACE V 5.0 Patch 9
+*
+* VAL-005 Phase 1: S/RV blowdown benchmark, dry system (no loop seal).
+* Reference: EGG-EAST-9232 (R5FORCE/MOD3s), Section 5 sample problem.
+* See VAL_005_build_spec.md for geometry provenance and targets.
+*
+* Layout (flow order):
+*   10 BREAK  supply pressure boundary, table: 16.55 MPa -> 18.27 MPa over 0.5 s
+*   20 VALVE  supply/accumulator isolation, trip-closed at t = 1.0 s
+*   30 PIPE   accumulator, 2.83 m3
+*   40 PIPE   inlet line + loop seal (dry: steam), 9 cells
+*   50 VALVE  relief valve: opens 40 ms at 17.24 MPa, recloses at 16.38 MPa
+*   60 PIPE   discharge: riser, header, long run, down leg, tail; 17 cells
+*   70 BREAK  atmosphere
+*
+*************
+* main data *
+*************
+*
+*       numtcr          ieos         inopt          nmat          id2o
+             0             0             1             0             0
+*
+*
+*****************
+* namelist data *
+*****************
+*
+ &inopts
+  ikfac=1,
+  usesjc=3,
+  graphLevel='full'
+ &end
+*
+***************
+* Model Flags *
+***************
+*
+*        dstep         timet
+             0           0.0
+*       stdyst        transi         ncomp          njun          ipak
+             0             1             7             6             1
+*         epso          epss
+        1.0E-4        1.0E-4
+*       oitmax        sitmax        isolut        ncontr         nccfl
+            10            10             0             0             0
+*         ntsv          ntcb          ntcf          ntrp          ntcp
+             2             0             0             2             0
+*
+*************************
+* component-number data *
+*************************
+*
+*  Component input order (IORDER)
+*-- type ---- num ------------- name ----------------  +    jun1   jun2   jun3
+* BREAK    *     10 s *                                +      10
+* VALVE    *     20 s *                                +      10     15
+* PIPE     *     30 s *                                +      15     25
+* PIPE     *     40 s *                                +      25     35
+* VALVE    *     50 s *                                +      35     45
+* PIPE     *     60 s *                                +      45     55
+* BREAK    *     70 e *                                +      55
+*
+*
+**************************************************
+* Starting Signal Variable Section of Model      *
+**************************************************
+*
+*         idsv          isvn          ilcn          icn1          icn2
+             1             0             0             0             0
+* sv2: relief-valve control pressure. Sensed at the accumulator outlet, not
+* at the cell adjacent to the valve seat: static pressure next to a choked
+* seat collapses by the dynamic head (~MPa for near-sonic steam), which
+* exceeds the 0.86 MPa deadband and chatters the valve. The reference's
+* reclosure at 1.44 s during accumulator blowdown implies quasi-static
+* sensing of the supply-side pressure.
+*         idsv          isvn          ilcn          icn1          icn2
+             2            21            30             2             0
+**************************************************
+* Finished Signal Variable Section of Model      *
+**************************************************
+*
+***********************************
+* Starting Trip Section of Model  *
+***********************************
+*
+*         Trip Storage Count Card
+*         ntse          ntct          ntsf          ntdp          ntsd
+             0             0             0             0             0
+*
+*trip                    101
+* Isolation valve closure at t = 1.0 s.
+* isrt=2: OFF below setp(1), ON-forward above setp(2) -> vtb1 closes the valve.
+*         idtp          isrt          iset          itst          idsg
+           101             2             0             1             1
+*      setp(1)       setp(2)
+         0.999           1.0
+*      dtsp(1)       dtsp(2)
+           0.0           0.0
+*      ifsp(1)       ifsp(2)
+             0             0
+*
+*trip                    102
+* Relief valve hysteresis on inlet pressure (pipe 40 cell 9).
+* isrt=-3: ON-reverse (close, vtb2) below setp(1); OFF (hold) in the deadband;
+* ON-forward (open, vtb1) above setp(4).
+*         idtp          isrt          iset          itst          idsg
+           102            -3             0             1             2
+* setp(2) sits well above setp(1): once reclosure starts at 16.38 MPa, the
+* closing valve throttles the line and pressure recovers ~0.2 MPa; a narrow
+* band would cancel the stroke mid-close and strand the valve partially open.
+* A real S/RV completes its spring-driven closure once it leaves the seat.
+*      setp(1)       setp(2)       setp(3)       setp(4)
+       16.38E6       16.90E6       17.23E6       17.24E6
+*      dtsp(1)       dtsp(2)       dtsp(3)       dtsp(4)
+           0.0           0.0           0.0           0.0
+*      ifsp(1)       ifsp(2)       ifsp(3)       ifsp(4)
+             0             0             0             0
+*
+***********************************
+* Finished Trip Section of Model  *
+***********************************
+*
+*
+*******   type           num        userid                component name
+break                     10             0                         supply
+*         jun1          ibty          isat          ioff      adjpress
+            10             1             3             0             0
+*         ibtr          ibsv          nbtb          nbsv          nbrf
+             0             1             3             0             0
+*         dxin         volin         alpin           tin           pin
+           0.5         1.0E6           1.0         623.3       16.55E6
+*         pain        concin          rbmx          poff          belv
+           0.0           0.0        1.0E20           0.0           0.0
+*         pscl         tlscl         tvscl         pascl        conscl
+           1.0           1.0           1.0           1.0           1.0
+* ptb: supply pressure ramp, 16.55 -> 18.27 MPa over 0.5 s, then constant
+0.0      16.55E6   s
+0.5      18.27E6   s
+2.0      18.27E6   e
+*
+*
+*******   type           num        userid                component name
+valve                     20             0                      isolation
+*       ncells         nodes          jun1          jun2          epsw
+             2             0            10            15      1.524E-6
+*       nsides
+             0
+*         ichf         iconc          ivty          ivps         nvtb2
+             1             0             3             2             0
+*         ivtr          ivsv         nvtb1          nvsv          nvrf
+           101             1             2             0             0
+*       ivtrov        ivtyov
+             0             0
+*         rvmx          rvov        fminov        fmaxov
+        1000.0           1.0           0.0           1.0
+*        radin            th         houtl         houtv         toutl
+           0.0           0.0           0.0           0.0           0.0
+*        toutv         avlve         hvlve        favlve          xpos
+           0.0      0.023523       0.17307           1.0           1.0
+* dx    *         0.25        0.25 e
+* vol   *    5.8808E-3   5.8808E-3 e
+* fa    *     0.023523    0.023523    0.023523 e
+* kfac  *          0.0         0.0         0.0 e
+* grav  *          0.0         0.0         0.0 e
+* hd    *      0.17307     0.17307     0.17307 e
+* nff: -1 at the accumulator nozzle (abrupt 40:1 area change)
+* nff   *            1           1          -1 e
+* alp   *          1.0         1.0 e
+* vl    *          0.0         0.0         0.0 e
+* vv    *          0.0         0.0         0.0 e
+* tl    *        623.3       623.3 e
+* tv    *        623.3       623.3 e
+* p     *      16.55E6     16.55E6 e
+* pa    *          0.0         0.0 e
+* vtb1: full open -> closed over 10 ms after trip 101
+0.0      1.0   s
+0.01     0.0   e
+*
+*
+*******   type           num        userid                component name
+pipe                      30             0                    accumulator
+*       ncells         nodes          jun1          jun2          epsw
+             2             0            15            25      1.524E-6
+*       nsides
+             0
+*         ichf         iconc      pipetype          ipow        npipes
+             1             0             0             0             1
+*        radin            th         houtl         houtv         toutl
+           0.0           0.0           0.0           0.0           0.0
+*        toutv          pwin         pwoff         rpwmx         pwscl
+           0.0           0.0           0.0           0.0           0.0
+* dx    *       1.5057      1.5057 e
+* vol   *      1.41500     1.41500 e
+* fa    *     0.023523     0.93976    0.023523 e
+* kfac  *          0.0         0.0         0.0 e
+* grav  *          0.0         0.0         0.0 e
+* hd    *      0.17307     1.09390     0.17307 e
+* nff   *           -1           1          -1 e
+* alp   *          1.0         1.0 e
+* vl    *          0.0         0.0         0.0 e
+* vv    *          0.0         0.0         0.0 e
+* tl    *        623.3       623.3 e
+* tv    *        623.3       623.3 e
+* p     *      16.55E6     16.55E6 e
+* pa    *          0.0         0.0 e
+*
+*
+*******   type           num        userid                component name
+pipe                      40             0                loop_seal_inlet
+*       ncells         nodes          jun1          jun2          epsw
+             9             0            25            35      1.524E-6
+*       nsides
+             0
+*         ichf         iconc      pipetype          ipow        npipes
+             1             0             0             0             1
+*        radin            th         houtl         houtv         toutl
+           0.0           0.0           0.0           0.0           0.0
+*        toutv          pwin         pwoff         rpwmx         pwscl
+           0.0           0.0           0.0           0.0           0.0
+* cells 1-2: horizontal 0.9144 m; 3: down 0.4572; 4-5: bottom 0.762;
+* 6: up 0.4572; 7-9: horizontal 1.2192 at the smaller inlet-line area
+* dx    *       0.4572      0.4572      0.4572      0.3810 s
+* dx    *       0.3810      0.4572      0.4064      0.4064 s
+* dx    *       0.4064 e
+* vol   *    1.0755E-2   1.0755E-2   1.0755E-2   8.9623E-3 s
+* vol   *    8.9623E-3   1.0755E-2   5.5462E-3   5.5462E-3 s
+* vol   *    5.5462E-3 e
+* fa    *     0.023523    0.023523    0.023523    0.023523 s
+* fa    *     0.023523    0.023523    0.013647    0.013647 s
+* fa    *     0.013647    0.013647 e
+* kfac  *          0.0         0.0         0.0         0.0 s
+* kfac  *          0.0         0.0         0.0         0.0 s
+* kfac  *          0.0         0.0 e
+* grav  *          0.0         0.0        -1.0         0.0 s
+* grav  *          0.0         1.0         0.0         0.0 s
+* grav  *          0.0         0.0 e
+* hd    *      0.17307     0.17307     0.17307     0.17307 s
+* hd    *      0.17307     0.17307     0.13182     0.13182 s
+* hd    *      0.13182     0.13182 e
+* nff: -1 at the accumulator nozzle (edge 1) and the line contraction (edge 7)
+* nff   *           -1           1           1           1 s
+* nff   *            1           1          -1           1 s
+* nff   *            1           1 e
+* alp   *          1.0         1.0         1.0         1.0 s
+* alp   *          1.0         1.0         1.0         1.0 s
+* alp   *          1.0 e
+* vl    *          0.0         0.0         0.0         0.0 s
+* vl    *          0.0         0.0         0.0         0.0 s
+* vl    *          0.0         0.0 e
+* vv    *          0.0         0.0         0.0         0.0 s
+* vv    *          0.0         0.0         0.0         0.0 s
+* vv    *          0.0         0.0 e
+* tl    *        623.3       623.3       623.3       623.3 s
+* tl    *        623.3       623.3       623.3       623.3 s
+* tl    *        623.3 e
+* tv    *        623.3       623.3       623.3       623.3 s
+* tv    *        623.3       623.3       623.3       623.3 s
+* tv    *        623.3 e
+* p     *      16.55E6     16.55E6     16.55E6     16.55E6 s
+* p     *      16.55E6     16.55E6     16.55E6     16.55E6 s
+* p     *      16.55E6 e
+* pa    *          0.0         0.0         0.0         0.0 s
+* pa    *          0.0         0.0         0.0         0.0 s
+* pa    *          0.0 e
+*
+*
+*******   type           num        userid                component name
+valve                     50             0                   relief_valve
+*       ncells         nodes          jun1          jun2          epsw
+             2             0            35            45      1.524E-6
+*       nsides
+             0
+*         ichf         iconc          ivty          ivps         nvtb2
+             1             0             3             2             2
+*         ivtr          ivsv         nvtb1          nvsv          nvrf
+           102             1             2             0             0
+*       ivtrov        ivtyov
+             0             0
+*         rvmx          rvov        fminov        fmaxov
+        1000.0           1.0           0.0           1.0
+*        radin            th         houtl         houtv         toutl
+           0.0           0.0           0.0           0.0           0.0
+* avlve: S/RV throat area, calibrated (not given by the reference) so the
+* isolated accumulator blowdown reaches the 16.38 MPa reclose setpoint ~0.44 s
+* after isolation, matching the reference reclosure at 1.44 s. Value found by
+* iteration; 2.75E-3 m2 gave reclosure at 1.17 s (blowdown 2.6x fast).
+*        toutv         avlve         hvlve        favlve          xpos
+           0.0      1.050E-3        0.0366           0.0           0.0
+* dx    *       0.3048      0.3048 e
+* vol   *    4.1596E-3   4.1596E-3 e
+* fa    *     0.013647    0.013647    0.013647 e
+* kfac  *          0.0         0.0         0.0 e
+* grav  *          0.0         0.0         0.0 e
+* hd    *      0.13182     0.13182     0.13182 e
+* nff   *            1           1           1 e
+* alp   *          1.0         1.0 e
+* vl    *          0.0         0.0         0.0 e
+* vv    *          0.0         0.0         0.0 e
+* tl    *        623.3       373.2 e
+* tv    *        623.3       373.2 e
+* p     *      16.55E6   1.01325E5 e
+* pa    *          0.0         0.0 e
+* vtb1: closed -> full open over 40 ms after trip 102 goes ON
+0.0      0.0   s
+0.04     1.0   e
+* vtb2: full open -> closed over 40 ms after trip 102 goes ONreverse
+0.0      1.0   s
+0.04     0.0   e
+*
+*
+*******   type           num        userid                component name
+pipe                      60             0                      discharge
+*       ncells         nodes          jun1          jun2          epsw
+            17             0            45            55      1.524E-6
+*       nsides
+             0
+*         ichf         iconc      pipetype          ipow        npipes
+             1             0             0             0             1
+*        radin            th         houtl         houtv         toutl
+           0.0           0.0           0.0           0.0           0.0
+*        toutv          pwin         pwoff         rpwmx         pwscl
+           0.0           0.0           0.0           0.0           0.0
+* cells 1-4: riser up 2.4384; 5: header 0.6096; 6-11: long run 5.4864;
+* 12-15: down leg 3.810; 16-17: tail 0.9144 (up; orientation per Fig 5 arrows)
+* dx    *       0.6096      0.6096      0.6096      0.6096 s
+* dx    *       0.6096      0.9144      0.9144      0.9144 s
+* dx    *       0.9144      0.9144      0.9144      0.9525 s
+* dx    *       0.9525      0.9525      0.9525      0.4572 s
+* dx    *       0.4572 e
+* vol   *    1.9674E-2   1.9674E-2   1.9674E-2   1.9674E-2 s
+* vol   *    1.9674E-2   5.9958E-2   5.9958E-2   5.9958E-2 s
+* vol   *    5.9958E-2   5.9958E-2   5.9958E-2   6.2481E-2 s
+* vol   *    6.2481E-2   6.2481E-2   6.2481E-2   2.9979E-2 s
+* vol   *    2.9979E-2 e
+* fa    *     0.013647    0.032274    0.032274    0.032274 s
+* fa    *     0.032274    0.065571    0.065571    0.065571 s
+* fa    *     0.065571    0.065571    0.065571    0.065571 s
+* fa    *     0.065571    0.065571    0.065571    0.065571 s
+* fa    *     0.065571    0.065571 e
+* kfac  *          0.0         0.0         0.0         0.0 s
+* kfac  *          0.0         0.0         0.0         0.0 s
+* kfac  *          0.0         0.0         0.0         0.0 s
+* kfac  *          0.0         0.0         0.0         0.0 s
+* kfac  *          0.0         0.0 e
+* grav: corner edges at component junctions are horizontal (junction
+* consistency); interior edges carry the leg inclination. Exact leg
+* elevation sums matter only for the Phase-2 liquid loop-seal variant.
+* grav  *          0.0         1.0         1.0         1.0 s
+* grav  *          1.0         0.0         0.0         0.0 s
+* grav  *          0.0         0.0         0.0        -1.0 s
+* grav  *         -1.0        -1.0        -1.0         0.0 s
+* grav  *          1.0         0.0 e
+* hd    *      0.13182     0.20271     0.20271     0.20271 s
+* hd    *      0.20271     0.28894     0.28894     0.28894 s
+* hd    *      0.28894     0.28894     0.28894     0.28894 s
+* hd    *      0.28894     0.28894     0.28894     0.28894 s
+* hd    *      0.28894     0.28894 e
+* nff: -1 at the riser expansion (edge 2) and the header expansion (edge 6)
+* nff   *            1          -1           1           1 s
+* nff   *            1          -1           1           1 s
+* nff   *            1           1           1           1 s
+* nff   *            1           1           1           1 s
+* nff   *            1           1 e
+* alp   *          1.0         1.0         1.0         1.0 s
+* alp   *          1.0         1.0         1.0         1.0 s
+* alp   *          1.0         1.0         1.0         1.0 s
+* alp   *          1.0         1.0         1.0         1.0 s
+* alp   *          1.0 e
+* vl    *          0.0         0.0         0.0         0.0 s
+* vl    *          0.0         0.0         0.0         0.0 s
+* vl    *          0.0         0.0         0.0         0.0 s
+* vl    *          0.0         0.0         0.0         0.0 s
+* vl    *          0.0         0.0 e
+* vv    *          0.0         0.0         0.0         0.0 s
+* vv    *          0.0         0.0         0.0         0.0 s
+* vv    *          0.0         0.0         0.0         0.0 s
+* vv    *          0.0         0.0         0.0         0.0 s
+* vv    *          0.0         0.0 e
+* tl    *        373.2       373.2       373.2       373.2 s
+* tl    *        373.2       373.2       373.2       373.2 s
+* tl    *        373.2       373.2       373.2       373.2 s
+* tl    *        373.2       373.2       373.2       373.2 s
+* tl    *        373.2 e
+* tv    *        373.2       373.2       373.2       373.2 s
+* tv    *        373.2       373.2       373.2       373.2 s
+* tv    *        373.2       373.2       373.2       373.2 s
+* tv    *        373.2       373.2       373.2       373.2 s
+* tv    *        373.2 e
+* p     *    1.01325E5   1.01325E5   1.01325E5   1.01325E5 s
+* p     *    1.01325E5   1.01325E5   1.01325E5   1.01325E5 s
+* p     *    1.01325E5   1.01325E5   1.01325E5   1.01325E5 s
+* p     *    1.01325E5   1.01325E5   1.01325E5   1.01325E5 s
+* p     *    1.01325E5 e
+* pa    *          0.0         0.0         0.0         0.0 s
+* pa    *          0.0         0.0         0.0         0.0 s
+* pa    *          0.0         0.0         0.0         0.0 s
+* pa    *          0.0         0.0         0.0         0.0 s
+* pa    *          0.0 e
+*
+*
+*******   type           num        userid                component name
+break                     70             0                     atmosphere
+*         jun1          ibty          isat          ioff      adjpress
+            55             0             3             0             0
+*         dxin         volin         alpin           tin           pin
+           0.5         1.0E6           1.0         373.2     1.01325E5
+*         pain        concin          rbmx          poff          belv
+           0.0           0.0        1.0E20           0.0           0.0
+*
+end
+*
+*****************
+* Timestep Data *
+*****************
+*        dtmin         dtmax          tend         rtwfp
+        1.0E-9        1.0E-3           2.0          10.0
+*        edint         gfint        dmpint        sedint
+         100.0        1.0E-3         100.0           0.1
+*
+*      endflag
+            0.0
