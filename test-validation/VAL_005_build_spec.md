@@ -366,3 +366,46 @@ positive kick as it exits, smooth decay.
 governing CF202 opening load within 5%, remaining magnitudes carried by
 plateau offsets from unspecified S/RV internals) - Phase 2 qualitative
 PASS on all three criteria.**
+
+## 13. Which is right? Sensitivity and closure checks
+
+Two checks address whether the computed wet-case magnitudes or the
+reference's are "correct".
+
+**Valve-area sensitivity (arbitration).** The wet deck rerun with the relief
+valve at the full inlet-line area (avlve = 0.013647, reclosure disabled for
+the experiment since the large throat drains the accumulator mid-transit):
+
+| Valve model | CF203 transit peaks | deepest at | well width |
+|---|---|---|---|
+| Small throat (committed, 1.05E-3 m2) | -72 / +86 kN | 0.459 s | ~60 ms |
+| Full line area (0.013647 m2) | -330 / +234 kN | 0.292 s | ~92 ms |
+| Reference Figure 17 | ~-40 / +25 kN | ~0.345 s | ~10 ms |
+
+The two runs **bracket** the reference: full area reproduces its timing but
+hits 8x harder; the small throat lands nearer its magnitude but ~0.11 s
+late. The reference's valve therefore behaved as large-area-with-high-loss -
+fast slug transmission, weak acceleration - an input the manual never
+specifies. Since the spread across plausible valve inputs alone (4.6x)
+exceeds the disagreement with the reference, **the benchmark cannot
+arbitrate slug-force magnitude, only structure** - and the structure
+(pull-kick-decay, burst confinement, smoothness) reproduces under every
+valve model tried. Choked steam flow scales as A*P while liquid flow scales
+as A*sqrt(dP/K): models matched on the steam blowdown (as ours was, by
+construction) remain unconstrained in liquid transmission. For real spring
+S/RV hardware a throat much smaller than the line is the physical geometry.
+
+**Momentum closure (theory check of the computed force).** From raw XTV
+data on the down leg, independent of the force tool: over the slug transit
+(0.30-0.70 s) the 1-D momentum balance
+dM/dt = (x_in - x_out)A + W_axial - F_shear closes to within **8.2% of the
+gross x-term impulse** (6669 N*s gross, 545 N*s residual), the residual
+being the elbow-corner losses at the leg-boundary edges that the straight-leg
+balance omits, plus half-cell flux offsets at 1 ms sampling. The
+substitution step underlying the Watkins formulation is therefore satisfied
+by the TRACE solution itself: the computed forces are consistent with the
+control-volume mechanics of the code's own hydraulics.
+
+Sensitivity deck = VAL_005W.inp with two changes: avlve/hvlve
+0.013647/0.13182, and trip 102 setp(1)/setp(2) lowered to 1.0E5/1.1E5
+(reclosure disabled).
