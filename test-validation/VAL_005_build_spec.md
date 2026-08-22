@@ -1,0 +1,239 @@
+# VAL-005 Build Specification: RELAP5 / R5FORCE S/RV Benchmark
+
+Status: **specification** — no TRACE model exists yet. This document collects
+everything extracted from the primary reference so the model can be built and
+judged without re-mining the scanned manual, and states the acceptance
+criteria up front.
+
+Primary reference: **EGG-EAST-9232** (EG&G Idaho, 1990), *R5FORCE/MOD3s*,
+[references/r5force/R5FORCEMOD3-EGG-EAST-9232-6341078.pdf](../references/r5force/R5FORCEMOD3-EGG-EAST-9232-6341078.pdf).
+Page references below use the report's own numbering (PDF page ≈ report page + 7).
+
+---
+
+## 1. Why this case
+
+The R5FORCE authors validated the Watkins pressure-shear method on a
+safety/relief-valve blowdown drawn from the EPRI S/RV Test Program
+configuration, comparing it against the legacy dm/dt formulation (report
+Section 6). `trace_force` implements the same Watkins formulation for TRACE
+that R5FORCE implements for RELAP5, so reproducing their force histories is a
+code-to-code validation of the complete tool on a plant-realistic transient.
+
+It exercises, simultaneously, everything VAL-001 through VAL-006 verified one
+at a time — wave propagation, area-change thrust, multi-leg direction
+projection, gravity in vertical legs — plus two things no case covers yet:
+**two-phase flow** and the **OPEN junction** discharge end (implemented in #13,
+currently unexercised by any validation case).
+
+## 2. Staging
+
+| Phase | Case | Reference data | Acceptance |
+|---|---|---|---|
+| **1** | Dry system ("w/o loop seal", ≈ EPRI Test 908 class) | **Numeric peak tables, Appendix H** + Figures 6-12 | Quantitative: peak magnitudes and times |
+| **2** | Loop seal filled with subcooled water (≈ EPRI Test 917 class) | Figures 13-17 curves only | Qualitative: overlay against digitized curves |
+
+Phase 1 first: single-phase steam except at the valve, and the reference data
+is tabular. The manual's Appendices G and H cover **only** the dry case; the
+loop-seal case exists only as Section 6 figures.
+
+## 3. System description
+
+Report Section 5 (p. 16) and Figure 4 (p. 17).
+
+Supply vessel → (isolation valve) → accumulator → relief-valve inlet line
+containing a **loop seal** (down-and-up S-bend) → spring relief valve →
+discharge piping with two area changes and several elbows → **open pipe end**
+at atmosphere.
+
+### 3.1 Geometry (Figure 4)
+
+> **Unit note:** Figure 4's printed SI area labels drop a leading zero (e.g.
+> "0.3228 m²" beside "(0.3474 ft²)"). The ft² values are self-consistent and
+> match the Appendix G-2 table; the corrected SI areas below are authoritative.
+
+| Item | Value |
+|---|---|
+| Supply vessel volume | 2.83 m³ (100 ft³) |
+| Accumulator volume | 2.83 m³ (100 ft³) |
+| Accumulator outlet / loop-seal pipe area | **0.023523 m²** (0.2532 ft²) |
+| Relief-valve inlet (loop-seal riser) area | **0.013647 m²** (0.1469 ft²) |
+| Discharge pipe, first (large) section area | **0.032274 m²** (0.3474 ft²) |
+| Discharge pipe, long run area | **0.065571 m²** (0.7058 ft²) |
+| Accumulator outlet horizontal run | 0.9144 m (3.00 ft) |
+| Loop-seal down leg | 0.4572 m (1.50 ft) |
+| Loop-seal bottom run | 0.762 m (2.50 ft) |
+| Loop-seal up leg | 0.4572 m (1.50 ft) |
+| Relief-valve inlet horizontal run | 1.2192 m (4.00 ft) |
+| Riser above valve (vertical) | 2.4384 m (8.00 ft) |
+| Discharge header, short horizontal | 0.6096 m (2.00 ft) |
+| Discharge long horizontal run | 5.4864 m (18.00 ft) |
+| Discharge down leg (vertical) | 3.810 m (12.50 ft) |
+| Discharge tail run to open end | 0.9144 m (3.00 ft) |
+
+(Leg-by-leg orientation is defined by Figure 4; the elbow layout gives the
+SF101-SF108 force directions in Figure 5.)
+
+### 3.2 Reference nodalization (Appendix G-2)
+
+The RELAP5 model used: supply vessel as volume set 101 (length 3.0114 m),
+accumulator + inlet piping as component 201, the valve-to-discharge piping as
+component **203 with 28 volumes** (203010000-203280000), and an atmospheric
+boundary volume (205). Typical cell lengths 0.15-0.55 m. The G-2 scan is
+partially legible; when building the TRACE deck, take **leg lengths and areas
+from Figure 4** and choose cell counts per leg to approximate the ~28-volume
+discharge-train resolution rather than transcribing G-2 cell-by-cell.
+
+## 4. Transient specification (both phases)
+
+Report p. 16:
+
+| Time | Event |
+|---|---|
+| 0.0 s | Upstream (vessel + accumulator + inlet line) at saturated steam, **16.55 MPa**. Discharge piping: saturated steam at **atmospheric pressure**; downstream boundary held at atmospheric. |
+| 0.0 → 0.5 s | Supply pressure ramped **linearly 16.55 → 18.27 MPa** |
+| 0.21 s | Relief-valve inlet reaches **17.24 MPa** → valve opens over **40 ms** |
+| ~0.5 s | Steady flow established (ramp ends) |
+| 1.0 s | Supply-vessel/accumulator isolation valve **closes** → accumulator blowdown |
+| 1.44 s | Relief valve **recloses at 16.38 MPa** |
+| 2.0 s | End of problem |
+
+**Phase 2 difference only:** the loop-seal volumes are initialized with
+subcooled liquid water instead of steam.
+
+## 5. TRACE model plan
+
+Components (all 1-D):
+
+1. **Supply/ramp boundary** — BREAK (or FILL) with a pressure-vs-time table:
+   16.55 MPa at t=0 ramping to 18.27 MPa at 0.5 s, constant after. This
+   replaces modeling the supply vessel internals; its 2.83 m³ matters only as
+   capacitance and can be folded into a vessel PIPE volume if the reclosure
+   depressurization timing proves sensitive to it.
+2. **Isolation VALVE** — trip-closed at t = 1.0 s (time trip).
+3. **Accumulator** — PIPE volume(s), 2.83 m³.
+4. **Inlet line + loop seal** — PIPE, areas/lengths per §3.1, GRAV terms for
+   the down/up legs (±1 on vertical cells). Phase 2 initializes these cells
+   with subcooled liquid (alp=0, T well below Tsat at 16.55 MPa).
+5. **Relief VALVE** — trip-controlled: opens over 40 ms when upstream pressure
+   signal ≥ 17.24 MPa, recloses at 16.38 MPa (hysteresis pair of trips on a
+   pressure signal variable). Valve flow area = 0.013647 m² line area unless
+   Section 6 figure matching indicates a throat area.
+6. **Discharge piping** — PIPE(s) with the two area changes (0.032274 →
+   0.065571 m²), riser and down-leg GRAV terms, elbow kfac per
+   `trace_roughness.py` guidance if needed.
+7. **Atmospheric BREAK** at the open end, 0.101325 MPa.
+
+Deck settings:
+
+- Namelist: `graphLevel='full'` so **wfl/wfv are written** — this validation
+  must use real TRACE friction, not `--mock-friction`.
+- Graphics interval `gfint ≤ 1.0E-3 s` — the 40 ms valve stroke and the
+  0.247 s force spike need resolution; 2.0 s / 1 ms = 2000 edits (the manual's
+  own comparison used 2184 records, Appendix H).
+- Timestep: `dtmax` small enough for the acoustic transient (VAL-002
+  experience applies); `tend = 2.0 s`.
+- ipak=1, ikfac=1, usesjc=3 as in the existing validation decks.
+
+## 6. Force definitions and segment mapping
+
+Figure 5 (p. 19) defines eight subforces on the legs; Appendix G-1/G-3 give
+the machine definitions. Combined forces (G-3):
+
+```
+CF201 = -SF101 + SF103
+CF202 = -SF102 - SF104 + SF106
+CF203 = -SF105 + SF108
+```
+
+Each SF is a single-leg axial force with R5FORCE junction types at its ends —
+the exact ancestors of this tool's junction types. The `trace_force` mapping:
+
+- One segment per SF leg, `direction_vector` = the leg's axis with sign
+  matching Figure 5's arrows (R5FORCE's ±1 direction flags).
+- Interior leg boundaries at elbows: **CONTINUED**; legs whose reference rows
+  are marked BOUNDED at area changes/closed ends: **BOUNDED**; and the
+  discharge tail's outlet is **OPEN** (G-1/G-2 mark the final junction OPEN) —
+  with the tail and end-pipe areas both 0.065571 m², this is the plain-exit
+  case, A_j omitted.
+- `trace_force` has no combined-force feature; compute CF201-203 in the
+  comparison/plot script by summing the SF columns per the definitions above.
+  (If VAL-005 proves this is a recurring need, a `combined:` config feature is
+  a candidate follow-up — decide after Phase 1.)
+
+## 7. Acceptance targets — Phase 1 (dry case)
+
+From Appendix H (pp. H-3 to H-6). The source is a 1990 microfilm scan;
+digits marked (?) must be re-verified against the PDF and cross-checked
+against Figures 6-12 before being treated as pass/fail thresholds.
+
+### Subforce peaks (H-3/H-4)
+
+| Force | Max positive (N) | at (s) | Max negative (N) | at (s) |
+|---|---|---|---|---|
+| SF101 | 7.406E+04 (?) | 0.56 | −1317.2 | 1.52 |
+| SF102 | 6.906E+04 (?) | 1.01 | ~−1220 (?) | 1.52 |
+| SF103 | 7.306E+04 | 1.01 | ~−1223 (?) | 1.52 |
+| SF104 | 3.682E+04 (?) | 1.02 | (?) | ~1.51 |
+| SF105 | 7.352E+04 | 1.01-1.02 | (?) | ~1.5 |
+| SF106 | 6.365E+04 (?) | 1.02 | −447.2 (?) | 1.50 |
+| SF107 / SF108 | 6.945E+04 (108) | 1.02 | −402.5 (?) | 1.50 |
+
+### Combined-force peaks (H-5/H-6)
+
+| Force | Max positive (N) | at (s) | Max negative (N) | at (s) |
+|---|---|---|---|---|
+| CF201 | +4242.3 | 1.43 | −5456.8 | 1.46 |
+| CF202 | ~+5.4E+03 (?) | 1.43 | −4.242E+04 (?) | 0.248 |
+| CF203 | ~+6.37E+03 (?) | 1.44 | −6962.5 | 0.247 |
+
+Physical structure worth reproducing regardless of exact magnitudes:
+
+- Large **negative** combined-force spikes at **0.247-0.248 s** — the opening
+  wave, ~40 ms after the valve begins to open at 0.21 s.
+- **Positive** combined peaks at **1.43-1.46 s** — the reclosure hammer
+  (valve recloses at 1.44 s).
+- Sustained subforce plateaus of order 10^4-10^5 N during steady blowdown.
+
+Suggested pass criteria (to finalize when the model exists): peak times within
+±0.05 s; peak magnitudes within a stated tolerance (start at ±20% — RELAP5 vs
+TRACE constitutive differences, valve modeling, and nodalization all differ;
+tighten if achievable). The event *sequence* and sign structure must match
+exactly.
+
+### Phase 2 (loop seal)
+
+Overlay computed CF203/SF105/SF108 against digitized Figures 13-17
+(pp. 29-33), including the 0.2-0.5 s close-ups (Figures 16-17). Acceptance is
+qualitative: slug-transit force signature present, comparable peak order of
+magnitude, no spurious oscillations (the figures exist precisely to show the
+legacy method oscillating and Watkins not).
+
+## 8. Known gaps and risks
+
+1. **Valve modeling** is the dominant uncertainty: TRACE trip/stroke behavior
+   vs RELAP5's 1982-era valve model. The 40 ms stroke and hysteresis reclosure
+   drive the peak timing.
+2. **Scan legibility**: the (?) entries in §7, and the G-2 per-cell table.
+   Re-read the PDF at higher zoom (or re-derive from figures) before freezing
+   pass/fail numbers.
+3. **RELAP5 vs TRACE physics**: choked flow at the valve, interphase drag in
+   Phase 2, wall friction correlations all differ; this is why tolerances are
+   generous and the structure/timing is the primary target.
+4. **Supply capacitance**: the ramp-table boundary shortcut (§5 item 1) may
+   distort the 1.0-1.44 s blowdown depressurization rate; if reclosure timing
+   is off, model the vessel volume explicitly.
+5. **trace_force feature check**: multi-segment configs with mixed
+   CONTINUED/BOUNDED/OPEN ends are all exercised at once here; VAL-005 is the
+   first case where OPEN participates in a transient result.
+
+## 9. Work plan
+
+1. **Session A**: re-verify the (?) digits; build the Phase-1 TRACE deck
+   (VAL_005.inp) with trips; iterate until the transient sequence (§4 events)
+   reproduces; commit deck + this spec update.
+2. **Session B**: segments_VAL_005.yaml (one segment per SF), comparison
+   script computing CFs and peak tables, plot overlays; judge against §7;
+   document in plan/report/README as VAL-005 Phase 1.
+3. **Session C**: loop-seal variant deck + digitized Figures 13-17 overlay;
+   final VAL-005 status.
