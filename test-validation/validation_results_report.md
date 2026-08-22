@@ -311,4 +311,14 @@ the slug enters the down leg, sharp positive kick as it exits, smooth decay:
 ![CF203 during slug transit](VAL_005W_cf203_zoom.png)
 ![Wet-case leg forces](VAL_005W_srv.png)
 
+Superimposed directly on the manual's Figure 17
+([overlay_VAL_005W_fig17.py](overlay_VAL_005W_fig17.py) regenerates it):
+red is the computed CF203 at true scale on the 1990 axes; blue is the same
+trace shifted $-0.114\text{ s}$ and scaled $\times 0.56$ so the deepest wells
+coincide. The pull-kick-decay sequence lands on the reference's; the computed
+well is broader because the calibrated small throat throttles the slug where
+the reference's passed in $\sim 10\text{ ms}$.
+
+![Computed CF203 superimposed on manual Figure 17](VAL_005W_fig17_overlay.png)
+
 **Final VAL-005 status: Phase 1 PARTIAL, Phase 2 qualitative PASS.**
