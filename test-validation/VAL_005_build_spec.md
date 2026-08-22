@@ -233,8 +233,9 @@ legacy method oscillating and Watkins not).
    sequence reproduces; see §10.
 2. **Session B** — DONE: per-leg segments, CF computation, judgment against
    Appendix H; see §11.
-3. **Session C**: loop-seal variant deck + digitized Figures 13-17 overlay;
-   final VAL-005 status.
+3. **Session C** — DONE: loop-seal variant judged against the Figures 13-17
+   signatures; see §12. Final status: Phase 1 PARTIAL, Phase 2 qualitative
+   PASS.
 
 ## 10. Session A results (Phase-1 deck)
 
@@ -328,3 +329,40 @@ state with a plain-orifice valve model.
 CF202 opening load reproduce; steady-plateau residuals from unspecified
 S/RV internals put the remaining peak magnitudes outside tolerance. Recorded
 as-is; revisit only if a defensible valve-internal geometry surfaces.
+
+## 12. Session C results (Phase-2, loop seal)
+
+[VAL_005W.inp](VAL_005W.inp) is the dry deck with the loop-seal cells
+(pipe 40 cells 3-6, ~39 kg) initialized as subcooled water at 400 K (the
+reference specifies only "subcooled"). The run completes without
+intervention; the event sequence is unchanged (open 0.206 s, isolation
+1.0006 s, reclose 1.450 s), and the slug behaves physically: the seal
+expels at 0.22-0.30 s, the liquid front transits the discharge (long run
+~0.35 s, down leg and tail ~0.45 s), and the line is steam again by 0.6 s.
+
+Judged against the spec's three Phase-2 criteria
+([compare_VAL_005W.py](compare_VAL_005W.py) reproduces the numbers):
+
+1. **Slug-transit burst present and confined** - CF203 bursts within
+   0.22-0.55 s (reference window 0.25-0.45 s; ours ends ~0.1 s later, the
+   throttled slug of the calibrated small throat), with a **near-zero mean
+   outside it: -62 N plateau** against the reference's ~0 (Fig 15), and a
+   reclosure ripple at 1.47 s. PASS.
+2. **Comparable order of magnitude** - CF203 deepest -71.8 kN / +86.3 kN
+   vs Fig 17's ~-40 kN / ~+25 kN (within ~2-3.4x, and comparable to the
+   modified-method's -65 kN in Fig 16); SF-level transit spikes -208 kN
+   (riser) / -212 kN (tail) vs Figs 13-14's ~130 kN (1.6x); post-slug
+   plateaus match the dry case. PASS.
+3. **No spurious oscillation** - CF203 step-to-step deltas at 1 ms edits:
+   median 2.3 N, max 8.4 kN inside the burst - smooth structured waves,
+   the property Figures 16-17 exist to demonstrate. PASS.
+
+The CF203 close-up ([VAL_005W_cf203_zoom.png](VAL_005W_cf203_zoom.png))
+shows the same shape grammar as Figure 17: negative pull as the slug
+enters and accelerates through the down leg (double-welled), sharp
+positive kick as it exits, smooth decay.
+
+**Final VAL-005 status: Phase 1 PARTIAL (timing and structure exact, the
+governing CF202 opening load within 5%, remaining magnitudes carried by
+plateau offsets from unspecified S/RV internals) - Phase 2 qualitative
+PASS on all three criteria.**

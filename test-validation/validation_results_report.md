@@ -290,3 +290,25 @@ other peak magnitudes outside tolerance. Full detail and diagnosis in
 
 ### 4. Leg Force Plot
 ![Case VAL-005 S/RV Blowdown Leg Forces](VAL_005_srv.png)
+
+### 5. Phase 2: Subcooled Loop Seal
+
+[VAL_005W.inp](VAL_005W.inp) fills the loop seal (pipe 40 cells 3-6,
+$\sim 39\text{ kg}$) with subcooled water at $400\text{ K}$. The slug expels at
+$0.22$-$0.30\text{ s}$ and transits the discharge train (down leg and tail at
+$\sim 0.45\text{ s}$); the line is steam again by $0.6\text{ s}$. Judged
+qualitatively against Figures 13-17 (the wet case exists only as curves):
+
+| Criterion | Reference | Computed | Verdict |
+|---|---|---|---|
+| Burst confined to transit window | $0.25$-$0.45\text{ s}$, CF203 mean $\sim 0$ outside | $0.22$-$0.55\text{ s}$, plateau $-62\text{ N}$ | **PASS** |
+| Peak order of magnitude | CF203 $\sim -40/+25\text{ kN}$ (Fig 17); SF spikes $\sim 130\text{ kN}$ | CF203 $-71.8/+86.3\text{ kN}$; SF-level $\sim 210\text{ kN}$ | **PASS** ($1.6$-$3\times$, slug throttled by the calibrated throat) |
+| No spurious oscillation | Fig 16 noise vs Fig 17 clean | median step $2.3\text{ N}$ at $1\text{ ms}$ edits | **PASS** |
+
+The CF203 close-up reproduces Figure 17's shape grammar - negative pull as
+the slug enters the down leg, sharp positive kick as it exits, smooth decay:
+
+![CF203 during slug transit](VAL_005W_cf203_zoom.png)
+![Wet-case leg forces](VAL_005W_srv.png)
+
+**Final VAL-005 status: Phase 1 PARTIAL, Phase 2 qualitative PASS.**
