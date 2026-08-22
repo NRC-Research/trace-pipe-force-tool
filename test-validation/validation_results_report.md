@@ -313,11 +313,12 @@ the slug enters the down leg, sharp positive kick as it exits, smooth decay:
 
 Superimposed directly on the manual's Figure 17
 ([overlay_VAL_005W_fig17.py](overlay_VAL_005W_fig17.py) regenerates it):
-red is the computed CF203 at true scale on the 1990 axes; blue is the same
-trace shifted $-0.114\text{ s}$ and scaled $\times 0.56$ so the deepest wells
-coincide. The pull-kick-decay sequence lands on the reference's; the computed
-well is broader because the calibrated small throat throttles the slug where
-the reference's passed in $\sim 10\text{ ms}$.
+the computed CF203 at true scale on the 1990 axes - no shifting, no scaling.
+The same pull-kick-decay sequence appears $\sim 0.11\text{ s}$ later and
+$\sim 2\times$ larger than the reference trace, with the positive kick rising
+past the reference frame; the computed well is broader because the calibrated
+small throat throttles the slug where the reference's passed in
+$\sim 10\text{ ms}$.
 
 ![Computed CF203 superimposed on manual Figure 17](VAL_005W_fig17_overlay.png)
 

@@ -3,12 +3,9 @@
 
 Renders page 40 of the R5FORCE manual (report p. 33: CF203, new/Watkins
 method, second sample problem, 0.2-0.5 s), calibrates its plot frame, and
-draws the computed CF203 from VAL_005W.th on top:
-
-  - solid red  : computed force, true scale on the figure's own axes
-                 (the positive peak rises above the 1990 frame, honestly);
-  - dashed blue: the same trace shifted -0.114 s and scaled x0.557 so the
-                 deepest wells coincide - the shape comparison.
+draws the computed CF203 from VAL_005W.th on top in solid red, at true
+scale on the figure's own axes - no shifting, no scaling. The positive
+peak rises above the 1990 frame, honestly.
 
 Frame calibration was measured from the 150-dpi render: pixel box
 (448, 359)-(1516, 1052) maps to (0.2 s, +0.5E5 N)-(0.5 s, -1.0E5 N),
@@ -39,12 +36,6 @@ X0_PX, X1_PX = 448.0, 1516.0     # t = 0.2 s ... 0.5 s
 Y0_PX, Y1_PX = 359.0, 1052.0     # F = +0.5E5 N ... -1.0E5 N
 T0, T1 = 0.2, 0.5
 F0, F1 = +0.5e5, -1.0e5
-
-# Well alignment: computed deepest well -71.8 kN at 0.459 s; the figure's
-# deepest well ~-40 kN at ~0.345 s.
-SHIFT_S = -0.114
-SCALE = 40.0 / 71.8
-
 
 def render_page():
     tmp = tempfile.mkdtemp()
@@ -99,25 +90,16 @@ def main():
     data = load_cf203()
 
     raw = [(t, f) for t, f in data if T0 <= t <= T1]
-    shifted = [(t + SHIFT_S, f * SCALE) for t, f in data
-               if T0 <= t + SHIFT_S <= T1]
-
-    draw_dashed(draw, polyline(shifted), fill=(30, 80, 200), width=3)
     draw.line(polyline(raw), fill=(200, 30, 30), width=3)
 
     try:
         font = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", 26)
     except OSError:
         font = ImageFont.load_default()
-    lx, ly = X0_PX + 30, Y1_PX - 190
+    lx, ly = X0_PX + 30, Y1_PX - 150
     draw.line([(lx, ly + 9), (lx + 46, ly + 9)], fill=(200, 30, 30), width=3)
     draw.text((lx + 56, ly - 4), "TRACE / trace_force CF203 (true scale)",
               fill=(200, 30, 30), font=font)
-    draw_dashed(draw, [(lx, ly + 49), (lx + 46, ly + 49)],
-                fill=(30, 80, 200), width=3)
-    draw.text((lx + 56, ly + 36),
-              "same, shifted -0.114 s and x0.56 (wells aligned)",
-              fill=(30, 80, 200), font=font)
 
     img.save(OUT)
     print(f"wrote {OUT}")
