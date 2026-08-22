@@ -234,3 +234,59 @@ The negative sign is itself a verification target: the fluid weight acts along $
 
 ### 4. Gravity Force Plot
 ![Case VAL-006 Static Column Gravity Plot](VAL_006_gravity.png)
+
+---
+
+## VAL-005: RELAP5 / R5FORCE S/RV Benchmark - Phase 1 (Dry Blowdown)
+
+### 1. Verification Setup
+
+TRACE deck [VAL_005.inp](VAL_005.inp) reproduces the EGG-EAST-9232 sample
+problem: pressure-ramped steam supply, trip-closed isolation valve,
+$2.83\text{ m}^3$ accumulator, dry loop-seal inlet line, hysteresis-tripped
+relief valve ($40\text{ ms}$ strokes, open $\geq 17.24\text{ MPa}$, reclose
+$\leq 16.38\text{ MPa}$), and the discharge train with both area changes,
+ending open to atmosphere. The event sequence matches the reference: relief
+opens at $0.206\text{ s}$ (ref. $0.21$), isolation closes at $1.0006\text{ s}$
+(ref. $1.0$), reclosure begins at $1.451\text{ s}$ (ref. $1.44$). Run with
+`graphLevel='full'`, so the force tool uses real TRACE wall friction.
+
+Per-leg segments ([segments_VAL_005.yaml](segments_VAL_005.yaml)) map manual
+Figure 5: elbows as BOUNDED boundaries, the expansion as a segment split whose
+differing end-cap areas carry the lip force, and the discharge end as an
+**OPEN junction** - its first exercise in a transient validation.
+
+### 2. Comparison Against R5FORCE (Appendix H, dry case)
+
+| Force | computed +peak @ s | ref +peak @ s | computed -peak @ s | ref -peak @ s |
+|---|---|---|---|---|
+| CF201 (riser) | $+39.8\text{ kN}$ @ $1.453$ | $+4.2\text{ kN}$ @ $1.43$ | $-31.8\text{ kN}$ @ $0.208$ | $-5.5\text{ kN}$ @ $1.46$ |
+| CF202 (run) | $+30.1\text{ kN}$ @ $1.460$ | $+5.4\text{ kN}$ @ $1.43$ | $\mathbf{-40.3\text{ kN}}$ @ $0.215$ | $\mathbf{-42.4\text{ kN}}$ @ $0.248$ |
+| CF203 (down leg) | $+15.9\text{ kN}$ @ $1.468$ | $+6.4\text{ kN}$ @ $1.44$ | $-21.4\text{ kN}$ @ $0.221$ | $-7.0\text{ kN}$ @ $0.247$ |
+
+Reproduced exactly: the time structure (negative spikes during the
+$40\text{ ms}$ valve opening; positive reclosure-hammer peaks at
+$1.45$-$1.47\text{ s}$), the sign pattern, quiescence before opening and after
+ring-down, and the **governing load - CF202's opening spike - within 5%**.
+Absolute (subforce-level) loads are the right order: the OPEN-ended tail leg
+carries a $-50.9\text{ kN}$ blowdown plateau against reference subforce
+plateaus of $\sim 70\text{ kN}$.
+
+Not reproduced: the remaining peak magnitudes ($2.5$-$9\times$ high). The
+$x = P + \rho u^2$ profile shows why: the first riser cell holds the
+underexpanded-jet state downstream of the calibrated $1.05\times 10^{-3}\text{ m}^2$
+throat (the reference specifies no valve internals), leaving steady combined-force
+plateaus that the reference's near-zero-mean CFs lack; the transient peaks ride
+on them. Interior cells conserve $x$ cleanly, confirming the formulation.
+
+### 3. Conclusion
+
+**Phase 1 PARTIAL.** Sequence, structure, and the governing opening load
+validate; residual plateau offsets from unspecified S/RV internals put the
+other peak magnitudes outside tolerance. Full detail and diagnosis in
+[VAL_005_build_spec.md](VAL_005_build_spec.md) §10-§11;
+[compare_VAL_005.py](compare_VAL_005.py) reproduces the comparison. Phase 2
+(subcooled loop seal, Figures 13-17 overlay) remains.
+
+### 4. Leg Force Plot
+![Case VAL-005 S/RV Blowdown Leg Forces](VAL_005_srv.png)

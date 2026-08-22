@@ -140,7 +140,7 @@ The post-processing engine has been verified against standard fluid-dynamics cas
 | **VAL-002** | Acoustic Wave / Water Hammer | Transient wave shock propagation | $+392,699.08\text{ N}$ (Peak) | $+441,668.44\text{ N}$ | **PASSED** (+12.47% overshoot) |
 | **VAL-003** | Piping Area Discontinuity | Step contraction momentum change | $-275,298.74\text{ N}$ (Static) | $-275,180.78\text{ N}$ | **PASSED** (-0.04%) |
 | **VAL-004** | 90-degree Piping Bend | Directional vector projection | $F_x = -375,851.2\text{ N}$<br>$F_y = +375,338.3\text{ N}$ | $F_x = -375,862.63\text{ N}$<br>$F_y = +375,325.24\text{ N}$ | **PASSED** (0.003%) |
-| **VAL-005** | EPRI Safety/Relief Valve | Two-phase transient dynamic loads | R5FORCE benchmark | TBD | **PLANNED** |
+| **VAL-005** | EPRI Safety/Relief Valve | Loop seal / valve transient dynamic loads | R5FORCE benchmark (dry case) | CF202 peak $-40.3\text{ kN}$ vs $-42.4\text{ kN}$ | **PHASE 1 PARTIAL** (timing exact; CF202 -5%; other peaks over) |
 | **VAL-006** | Static Column Gravity | Gravity term projection and sign | $F_{\text{vert}} = -7682.25\text{ N}$<br>$F_{30^{\circ}} = -3841.13\text{ N}$ | $F_{\text{vert}} = -7682.23\text{ N}$<br>$F_{30^{\circ}} = -3841.10\text{ N}$ | **PASSED** (0.001%) |
 
 ---

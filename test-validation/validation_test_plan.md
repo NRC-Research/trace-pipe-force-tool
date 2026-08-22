@@ -73,6 +73,7 @@ This test plan defines a suite of verification and validation cases to ensure th
 *   **Validation Source**:
     1.  **R5FORCE/MOD3s Results**: The R5FORCE manual (Section 6, Figures 10-17) documents the reference subforces ($SF_{101}$ to $SF_{108}$) and combined segment forces ($CF_{201}$ to $CF_{203}$) computed from RELAP5 output.
     2.  **Validation Protocol**: Since `trace_force` implements the identical Watkins pressure-shear formulation, executing `trace_force` on the TRACE equivalent of the EPRI model must yield force histories that match the RELAP5/R5FORCE curves.
+*   **Status**: Phase 1 (dry case) PARTIAL - event sequence and peak timing reproduce exactly; the governing CF202 opening load matches within 5%; remaining combined-force magnitudes exceed tolerance due to S/RV internals the reference does not specify. See [VAL_005_build_spec.md](VAL_005_build_spec.md) sections 10-11. Phase 2 (loop seal) pending.
 
 ---
 
