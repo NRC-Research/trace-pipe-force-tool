@@ -231,9 +231,8 @@ legacy method oscillating and Watkins not).
 
 1. **Session A** — DONE: Phase-1 deck built (VAL_005.inp) and the §4 event
    sequence reproduces; see §10.
-2. **Session B**: segments_VAL_005.yaml (one segment per SF), comparison
-   script computing CFs and peak tables, plot overlays; judge against §7;
-   document in plan/report/README as VAL-005 Phase 1.
+2. **Session B** — DONE: per-leg segments, CF computation, judgment against
+   Appendix H; see §11.
 3. **Session C**: loop-seal variant deck + digitized Figures 13-17 overlay;
    final VAL-005 status.
 
@@ -285,3 +284,47 @@ delivers wfl/wfv, so no mock friction is involved.
    1.0 s). Corner edges at component junctions are horizontal (TRACE
    junction consistency); exact leg elevation sums are deferred to the
    Phase-2 liquid variant, where gravity heads matter.
+
+## 11. Session B results (Phase-1 judgment)
+
+Per-leg segments ([segments_VAL_005.yaml](segments_VAL_005.yaml)) map Figure 5:
+elbows are BOUNDED force boundaries, the expansion splits the long run into two
+segments whose BOUNDED end-cap areas differ by the lip (so their sum is the
+CF202-equivalent), and the tail leg's outlet is the reference's **OPEN**
+discharge end - the first transient exercise of the OPEN junction.
+[compare_VAL_005.py](compare_VAL_005.py) reproduces the comparison.
+
+| Force | computed +peak @ s | ref +peak @ s | computed -peak @ s | ref -peak @ s |
+|---|---|---|---|---|
+| CF201 | +39.8 kN @ 1.453 | +4.2 kN @ 1.43 | -31.8 kN @ 0.208 | -5.5 kN @ 1.46 |
+| CF202 | +30.1 kN @ 1.460 | +5.4 kN @ 1.43 | **-40.3 kN @ 0.215** | **-42.4 kN @ 0.248** |
+| CF203 | +15.9 kN @ 1.468 | +6.4 kN @ 1.44 | -21.4 kN @ 0.221 | -7.0 kN @ 0.247 |
+| Tail (OPEN) | +0.5 kN | - | -50.9 kN plateau | (SF-level plateaus ~70 kN) |
+
+**What passes:**
+
+- Event sequence within 15 ms at every event (§10) and **peak timing
+  structure exact**: negative spikes during valve opening, positive peaks at
+  reclosure, in the reference's order.
+- **CF202's governing negative peak: -40.3 vs -42.4 kN (-5%).**
+- Quiescent before opening (<3 N) and after ring-down.
+- SF-level (absolute) loads the right order of magnitude: tail-leg blowdown
+  plateau -50 kN vs reference subforce plateaus ~70 kN.
+
+**What does not:** CF201/CF203 peaks and the CF201/CF202 positive peaks run
+2.5-9x above the reference. Diagnosis (x = P + rho u^2 profiles at steady
+blowdown): interior cells conserve x cleanly, but the first riser cell holds
+the underexpanded-jet state downstream of the calibrated 1.05E-3 m2 throat
+(x = 2.41 MPa vs 1.68 one cell later), leaving steady CF plateaus
+(CF201 +18.2 kN, CF202 -7.8 kN) that the reference's near-zero-mean combined
+forces do not have - their 1982 valve model evidently delivered a milder
+expansion state to the riser. The transient peaks ride on these plateaus.
+This is spec risk #1 (valve internals unspecified by the reference) made
+quantitative; the throat area cannot simultaneously match the blowdown
+duration (which it does, by construction) and the reference's expansion
+state with a plain-orifice valve model.
+
+**Verdict: Phase 1 PARTIAL.** Timing, sign structure, and the governing
+CF202 opening load reproduce; steady-plateau residuals from unspecified
+S/RV internals put the remaining peak magnitudes outside tolerance. Recorded
+as-is; revisit only if a defensible valve-internal geometry surfaces.

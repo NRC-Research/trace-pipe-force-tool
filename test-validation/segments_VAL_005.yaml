@@ -1,0 +1,81 @@
+# VAL-005 Phase 1: per-leg segments for the S/RV blowdown discharge train,
+# mapped from R5FORCE manual Figure 5. Combined forces CF201-CF203 are the
+# structural loads on the legs between elbows; elbows and the open end are
+# force boundaries (BOUNDED / OPEN), matching the reference's junction table.
+#
+# The long horizontal run contains the pipe expansion, which in the reference
+# is its own force boundary (SF104). It is split here into two segments -
+# header (0.032274 m2) and long run (0.065571 m2) - whose BOUNDED end terms
+# differ by the expansion lip area, so their SUM is the CF202-equivalent leg
+# load, with the lip force carried implicitly:
+#   CF202_equiv = F(CF202a_Header) + F(CF202b_LongRun)
+#
+# Directions are the flow sense of each leg (riser up, run +x, down leg -z,
+# tail up). The tail's outlet is the reference's OPEN discharge end - a plain
+# exit (junction area = pipe area), so no 'area' key.
+
+settings:
+  ambient_pressure_pa: 101325.0
+  units: "METRIC"
+  output_format: "TH"
+
+segments:
+  - name: "VAL_005_CF201_Riser"
+    direction_vector: [0.0, 0.0, 1.0]
+    components:
+      - id: 60
+        type: "pipe"
+        cells: [1, 2, 3, 4]
+        cell_length: 0.6096
+    inlet_junction:
+      type: "BOUNDED"
+    outlet_junction:
+      type: "BOUNDED"
+
+  - name: "VAL_005_CF202a_Header"
+    direction_vector: [1.0, 0.0, 0.0]
+    components:
+      - id: 60
+        type: "pipe"
+        cells: [5]
+        cell_length: 0.6096
+    inlet_junction:
+      type: "BOUNDED"
+    outlet_junction:
+      type: "BOUNDED"
+
+  - name: "VAL_005_CF202b_LongRun"
+    direction_vector: [1.0, 0.0, 0.0]
+    components:
+      - id: 60
+        type: "pipe"
+        cells: [6, 7, 8, 9, 10, 11]
+        cell_length: 0.9144
+    inlet_junction:
+      type: "BOUNDED"
+    outlet_junction:
+      type: "BOUNDED"
+
+  - name: "VAL_005_CF203_DownLeg"
+    direction_vector: [0.0, 0.0, -1.0]
+    components:
+      - id: 60
+        type: "pipe"
+        cells: [12, 13, 14, 15]
+        cell_length: 0.9525
+    inlet_junction:
+      type: "BOUNDED"
+    outlet_junction:
+      type: "BOUNDED"
+
+  - name: "VAL_005_Tail_OpenEnd"
+    direction_vector: [0.0, 0.0, 1.0]
+    components:
+      - id: 60
+        type: "pipe"
+        cells: [16, 17]
+        cell_length: 0.4572
+    inlet_junction:
+      type: "BOUNDED"
+    outlet_junction:
+      type: "OPEN"
